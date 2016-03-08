@@ -1,0 +1,34 @@
+<ion-content ng-controller="registerCtrl">
+  
+  
+  <form ng-submit="register(vm)">
+    <div class="list">
+      <label class="item item-input">
+        <input type="text" placeholder="Email" ng-model="vm.email">
+      </label>
+      <label class="item item-input">
+        <input type="text" placeholder="Password" ng-model="vm.password">
+      </label>
+      <label class="item item-input">
+        <input type="text" placeholder="Phone Number" ng-model="vm.phoneNum">
+      </label>
+    </div>
+    <label class="item item-input item-select">
+      <div class="input-label">
+        Role
+      </div>
+      <select ng-model="decision.select">
+        <option selected value="customer">Customer</option>
+        <option value="driver">Driver</option>
+      </select>
+    </label>
+    <button class="button button-block button-positive" type="submit">Register</button>        
+  </form>
+  <ul class="list">
+    <li class="item" ng-model="customer">
+      {{customer.email}}, {{customer.password}}, {{customer.phoneNum}}
+    </li>
+  </ul>              
+</ion-content>
+
+  
