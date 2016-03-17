@@ -25,7 +25,12 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       $stateProvider.state('login', {
       url: '/',
       templateUrl: 'templates/login.html',
-      controller: 'customerLoginCtrl'
+      controller: 'LoginCtrl'
+      })
+      $stateProvider.state('login_driver', {
+      url: '/login_driver',
+      templateUrl: 'templates/login_driver.html',
+      controller: 'LoginCtrl'
       })
 
       $stateProvider.state('book', {
@@ -40,11 +45,19 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       templateUrl: 'templates/test.html',
       authenticated: true,
       // controller: 'AppCtrl',
-      data: {
-        authorizedRoles: [USER_ROLES.customer]
-      }
-
-    })
+        data: {
+          authorizedRoles: [USER_ROLES.customer]
+        }
+      })
+      $stateProvider.state('driver_test', {
+      url: '/driver_test',
+      templateUrl: 'templates/driver_test.html',
+      authenticated: true,
+      // controller: 'AppCtrl',
+        data: {
+          authorizedRoles: [USER_ROLES.driver]
+        }
+      })
       
 
 })
@@ -97,7 +110,7 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 
 })
 
-.controller('customerLoginCtrl', function ($scope,$state,$cookies,CustomersModel,DriversModel,$ionicPopup, AuthService) {
+.controller('LoginCtrl', function ($scope,$state,$cookies,CustomersModel,DriversModel,$ionicPopup, AuthService) {
   $scope.uid ='';
   $scope.authenticate = function(form){
     CustomersModel.all().success(function(response){
@@ -129,10 +142,11 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
   };
  
   $scope.login = function(data) {
-    AuthService.login(data.email, data.password).then(function(authenticated) {
+    console.log(data.email);
+    AuthService.login(data.email, data.password, data.user_type).then(function(authenticated) {
       $scope.uid = $cookies.get('user_id');
       $state.go('logged_in', {}, {reload: true});
-      console.log($scope.uid);
+      
     }, function(err) {
       var alertPopup = $ionicPopup.alert({
         title: 'Login failed!',
@@ -207,16 +221,16 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       if (!AuthService.isAuthorized(authorizedRoles)) {
         event.preventDefault();
         $state.go($state.current, {}, {reload: true});
-        $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+        //$rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
       }
     }
  
-    if (!AuthService.isAuthenticated()) {
-      if (next.name !== 'login') {
-        event.preventDefault();
-        $state.go('login');
-      }
-    }
+    // if (!AuthService.isAuthenticated()) {
+    //   if (next.name !== 'login') {
+    //     event.preventDefault();
+    //     $state.go('login');
+    //   }
+    // }
   });
 });
 

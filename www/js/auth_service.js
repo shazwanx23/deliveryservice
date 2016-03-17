@@ -1,7 +1,7 @@
 angular.module('AuthService', [])
  
-.service('AuthService', function($q, $http,$cookies, USER_ROLES, CustomersModel) {
- 
+.service('AuthService', function($q, $http,$cookies, USER_ROLES, CustomersModel,DriversModel) {
+  var user_type = '';
   var email = '';
   var uid = '';
   var isAuthenticated = false;
@@ -14,24 +14,22 @@ angular.module('AuthService', [])
     }
   }
  
-  function storeUserCredentials(mail,id) {
+  function storeUserCredentials(mail,id,type) {
     window.localStorage.setItem(mail, id);
-    useCredentials(mail,id);
+    useCredentials(mail,id,type);
   }
  
-  function useCredentials(mail,id) {
+  function useCredentials(mail,id,type) {
     email = mail;
     isAuthenticated = true;
     uid = id;
-    role = USER_ROLES.customer;
- 
-    // if (email == 'admin') {
-    //   role = USER_ROLES.admin
-    // }
-    // if (email == 'user') {
-    //   role = USER_ROLES.public
-    // }
- 
+    console.log(type);
+    if(type === "customer"){
+      console.log("type: " +(type === "customer"));
+      role = USER_ROLES.customer;
+    }else if(type === "driver"){
+      role = USER_ROLES.driver;
+    }
   }
  
   function destroyUserCredentials() {
@@ -51,16 +49,24 @@ angular.module('AuthService', [])
     }
   }
  
-  var login = function(mail, pw) {
+  var login = function(mail, pw,type) {
     var data = {};
+    user_type = type;
+    console.log(type);
+    var userService = CustomersModel;
     return $q(function(resolve, reject) {
-      CustomersModel.all().success(function(response){
+      if(type === "customer") {
+        userService = CustomersModel;
+      }else if(type === "driver") {
+        userService = DriversModel;
+      }      
+      userService.all().success(function(response){
          data = response.data;
         }).then(function(){
           for(var i=0;i< data.length;i++){
             if(mail === data[i].email && pw === data[i].password){
               //user authenticated
-              storeUserCredentials(data[i].email,data[i].id);
+              storeUserCredentials(data[i].email,data[i].id,user_type);
               $cookies.put('user_id', data[i].id);
               //console.log($cookies.get('user_id'));
               resolve('Login success.');    
