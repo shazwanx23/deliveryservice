@@ -23,6 +23,9 @@ angular.module('SimpleRESTIonic.services', [])
         function getUrlForId(id) {
             return getUrl() + id;
         }
+        function getUrlForEmail(email) {
+            return getUrl() + email;
+        }
 
         service.all = function () {
             return $http.get(getUrl());
@@ -30,6 +33,9 @@ angular.module('SimpleRESTIonic.services', [])
 
         service.fetch = function (id) {
             return $http.get(getUrlForId(id));
+        };
+        service.fetch = function (id) {
+            return $http.get(getUrlForEmail(email));
         };
 
         service.create = function (object) {
@@ -43,6 +49,7 @@ angular.module('SimpleRESTIonic.services', [])
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
+
     })
     //to be refactored later
     .service('DriversModel', function ($http, Backand) {

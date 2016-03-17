@@ -3,9 +3,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'SimpleRESTIonic.services'])
+angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'SimpleRESTIonic.services','AuthService','ngCookies'])
 
-.config(function (BackandProvider, $stateProvider, $urlRouterProvider, $httpProvider) {
+.config(function (BackandProvider, $stateProvider, $urlRouterProvider, $httpProvider, USER_ROLES) {
     // change here to your appName
     BackandProvider.setAppName('mynewapp12345');
 
@@ -18,9 +18,34 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
      $urlRouterProvider.otherwise('/')
 
       $stateProvider.state('home', {
-      url: '/',
+      url: '/register',
       templateUrl: 'templates/register_customer.html'
-  })
+      })
+
+      $stateProvider.state('login', {
+      url: '/',
+      templateUrl: 'templates/login.html',
+      controller: 'customerLoginCtrl'
+      })
+
+      $stateProvider.state('book', {
+      url: '/book',
+      templateUrl: 'templates/create_booking.html',      
+      controller: 'BookCtrl',
+      //authenticated: true
+      })
+
+      $stateProvider.state('logged_in', {
+      url: '/logged_in',
+      templateUrl: 'templates/test.html',
+      authenticated: true
+      // controller: 'AppCtrl',
+      // data: {
+      //   authorizedRoles: [USER_ROLES.customer]
+      // }
+
+    })
+      
 
 })
 
@@ -43,23 +68,14 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 })
 
 
-.controller('registerCtrl', function ($scope,CustomersModel,DriversModel) {
+.controller('registerCtrl', function ($scope,$state,CustomersModel,DriversModel) {
   $scope.customer = {};
-  //$scope.customers =
-  //[
-  //  {email: "customer@email.com", password: "password", phoneNum: "0131234567"},
-  //  {email: "customer1@email.com", password: "password", phoneNum: "0131234568"},
-  //  {email: "customer2@email.com", password: "password", phoneNum: "0131234569"},
-  //];
-
   $scope.register = function(vm){
-    //$scope.customers.push($scope.vm);
+    
     $scope.customer.email = vm.email;
     $scope.customer.password = vm.password;
     $scope.customer.phoneNum = vm.phoneNum;
-    //$scope.vm = null;
     create(vm,$scope.decision.select);
-
   };
 
   function create(object,type) {
@@ -67,18 +83,122 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       console.log("customer");
       CustomersModel.create(object)
       .then(function (result) {
-          //cancelCreate();
-          //getAll();
+          $state.go('login');
       });
     }else if(type === "driver"){
       console.log("driver");
       DriversModel.create(object)
       .then(function (result) {
-          //cancelCreate();
-          //getAll();
+        $state.go('login');
       });
     }
     
   }
 
 })
+
+.controller('customerLoginCtrl', function ($scope,$state,$cookies,CustomersModel,DriversModel,$ionicPopup, AuthService) {
+  $scope.uid ='';
+  $scope.authenticate = function(form){
+    CustomersModel.all().success(function(response){
+      $scope.data = response.data;
+    }).then(function(){
+      //console.log($scope.data[0].id);
+      console.log($scope.data[0].email);
+      console.log($scope.data[0].password);
+      //authenticate user
+      for(var i=0;i<$scope.data.length;i++){
+        if(form.email === $scope.data[i].email && form.password === $scope.data[i].password){
+          //user authenticated
+          $scope.message = "User authenticated";
+          $scope.uid = $scope.data[i].id;
+          //$state.go('logged_in');
+
+        }
+        if(i=== $scope.data.length){
+          $scope.message = "Authentication failed!";        
+        }
+      //success message
+      };
+      
+    }); 
+  }
+  //$scope.data = {};
+  $scope.setCurrentUsername = function(mail) {
+    $scope.email = mail;
+  };
+ 
+  $scope.login = function(data) {
+    AuthService.login(data.email, data.password).then(function(authenticated) {
+      $scope.uid = $cookies.get('user_id');
+      $state.go('logged_in', {}, {reload: true});
+      console.log($scope.uid);
+    }, function(err) {
+      var alertPopup = $ionicPopup.alert({
+        title: 'Login failed!',
+        template: 'Please check your credentials!'
+      });
+    });
+  };
+
+})
+
+.controller('BookCtrl', function($scope,$cookies) {
+
+    $scope.booking = {};
+    $scope.booking.pickup = "KTR";
+    $scope.booking.destination = "sri putri";
+    $scope.booking.timein = "11.11AM";
+    $scope.booking.driver = "Ahmad";
+  $scope.showdata = function(form){
+    $scope.booking.pickup = form.pickup;
+    $scope.booking.destination = form.destination;
+    $scope.booking.timein = form.timein;
+    $scope.booking.driver = form.driver;
+    console.log($scope.booking);
+  };
+
+})
+
+
+.controller('AppCtrl', function($scope, $state,$cookies, $ionicPopup, AuthService, AUTH_EVENTS) {
+  $scope.uid = $cookies.get('user_id');;  
+ 
+  $scope.$on(AUTH_EVENTS.notAuthorized, function(event) {
+    var alertPopup = $ionicPopup.alert({
+      title: 'Unauthorized!',
+      template: 'You are not allowed to access this resource.'
+    });
+  });
+ 
+  $scope.$on(AUTH_EVENTS.notAuthenticated, function(event) {
+    AuthService.logout();
+    $state.go('login');
+    var alertPopup = $ionicPopup.alert({
+      title: 'Session Lost!',
+      template: 'Sorry, You have to login again.'
+    });
+  });
+})
+
+
+// .run(function ($cookies,$rootScope, $location, AuthService) {
+//   $rootScope.$on('$stateChangeStart', function (event,next, current) {
+//     if(next.authenticated){
+//       if(!AuthService.getAuthStatus){
+//         console.log(AuthService.getAuthStatus);
+//         $location.path('/');
+//       }
+//     }
+
+//     if(next.originalPath == '/'){
+//       console.log('Login page');
+//       if(AuthService.getAuthStatus){
+//         $location.path(current,$$route.originalPath);
+//       }
+//     }
+//   })
+// });
+
+
+
