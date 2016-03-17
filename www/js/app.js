@@ -32,7 +32,7 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       url: '/book',
       templateUrl: 'templates/create_booking.html',      
       controller: 'BookCtrl',
-      //authenticated: true
+      authenticated: true
       })
 
       $stateProvider.state('logged_in', {
@@ -182,23 +182,24 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 })
 
 
-// .run(function ($cookies,$rootScope, $location, AuthService) {
-//   $rootScope.$on('$stateChangeStart', function (event,next, current) {
-//     if(next.authenticated){
-//       if(!AuthService.getAuthStatus){
-//         console.log(AuthService.getAuthStatus);
-//         $location.path('/');
-//       }
-//     }
+.run(function ($state,$cookies,$rootScope, $location, AuthService) {
+  $rootScope.$on('$stateChangeStart', function (event,next, current) {
+    if(next.authenticated){
+      if(!AuthService.getAuthStatus()){
+        event.preventDefault();
+        //console.log(AuthService.getAuthStatus);
+        $state.go('login');
+      }
+    }
 
-//     if(next.originalPath == '/'){
-//       console.log('Login page');
-//       if(AuthService.getAuthStatus){
-//         $location.path(current,$$route.originalPath);
-//       }
-//     }
-//   })
-// });
+    if(next.originalPath == '/'){
+      console.log('Login page');
+      if(AuthService.getAuthStatus()){
+        $location.path(current,$$route.originalPath);
+      }
+    }
+  })
+});
 
 
 
