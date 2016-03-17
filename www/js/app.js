@@ -38,11 +38,11 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       $stateProvider.state('logged_in', {
       url: '/logged_in',
       templateUrl: 'templates/test.html',
-      authenticated: true
+      authenticated: true,
       // controller: 'AppCtrl',
-      // data: {
-      //   authorizedRoles: [USER_ROLES.customer]
-      // }
+      data: {
+        authorizedRoles: [USER_ROLES.customer]
+      }
 
     })
       
@@ -183,22 +183,41 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 
 
 .run(function ($state,$cookies,$rootScope, $location, AuthService) {
-  $rootScope.$on('$stateChangeStart', function (event,next, current) {
-    if(next.authenticated){
-      if(!AuthService.getAuthStatus()){
+
+
+  // $rootScope.$on('$stateChangeStart', function (event,next, current) {
+  //   if(next.authenticated){
+  //     if(!AuthService.getAuthStatus()){
+  //       event.preventDefault();
+  //       $state.go('login');
+  //     }
+  //   }
+
+  //   if(next.originalPath == '/'){
+  //     console.log('Login page');
+  //     if(AuthService.getAuthStatus()){
+  //       $location.path(current,$$route.originalPath);
+  //     }
+  //   }
+  // })
+  $rootScope.$on('$stateChangeStart', function (event,next, nextParams, fromState) {
+ 
+    if ('data' in next && 'authorizedRoles' in next.data) {
+      var authorizedRoles = next.data.authorizedRoles;
+      if (!AuthService.isAuthorized(authorizedRoles)) {
         event.preventDefault();
-        //console.log(AuthService.getAuthStatus);
+        $state.go($state.current, {}, {reload: true});
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+      }
+    }
+ 
+    if (!AuthService.isAuthenticated()) {
+      if (next.name !== 'login') {
+        event.preventDefault();
         $state.go('login');
       }
     }
-
-    if(next.originalPath == '/'){
-      console.log('Login page');
-      if(AuthService.getAuthStatus()){
-        $location.path(current,$$route.originalPath);
-      }
-    }
-  })
+  });
 });
 
 

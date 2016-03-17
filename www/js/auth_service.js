@@ -82,7 +82,8 @@ angular.module('AuthService', [])
     if (!angular.isArray(authorizedRoles)) {
       authorizedRoles = [authorizedRoles];
     }
-    return (isAuthenticated && authorizedRoles.indexOf(role) !== -1);
+    console.log(authorizedRoles.indexOf(role));
+    return (authorizedRoles.indexOf(role) !== -1);
   };
   loadUserCredentials();
  
