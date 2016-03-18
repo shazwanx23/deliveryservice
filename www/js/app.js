@@ -37,7 +37,14 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       url: '/book',
       templateUrl: 'templates/create_booking.html',      
       controller: 'BookCtrl',
-      authenticated: true
+      // authenticated: true
+      })
+
+      $stateProvider.state('test_book', {
+      url: '/test_book',
+      templateUrl: 'templates/test_book.html',      
+      controller: 'BookCtrl',
+      // authenticated: true
       })
 
       $stateProvider.state('logged_in', {
