@@ -5,10 +5,10 @@ test booking
       Pick up : {{booking.pickup}} , Destination : {{booking.destination}}
     </li>    
     <li class="item">
-      Time: {{booking.timein}}, Driver: {{booking.driver}}
+      Time: {{booking.timein}} Driver: {{booking.driver}}
     </li>
 </ul>
-  <form ng-submit="showdata(form)">
+  <form ng-submit="createBooking(form)">
     <div class="list">
     	<label class="item item-input item-stacked-label">
 	      <span class="input-label">Pick up</span>
@@ -24,11 +24,11 @@ test booking
 	     </label>
 	     
     </div>
-    <hr />
+    <hr />    
       <h4>Select Driver</h4>
-      <ion-list>
-        <ion-radio ng-model="form.driver" ng-value="'A'" checked="checked">Driver A</ion-radio>
-        <ion-radio ng-model="form.driver" ng-value="'B'">Driver B</ion-radio>
+      <ion-list ng-repeat="driver in drivers" >
+        <ion-radio ng-model="form.driver" ng-value="{{driver.id}}">{{driver.email}}</ion-radio>
+        <br />        
       </ion-list>
     <button class="button button-block button-positive" type="submit">Book</button>     
   </form>

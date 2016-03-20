@@ -21,7 +21,7 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       url: '/register',
       templateUrl: 'templates/register_customer.html'
       })
-
+      //Login states
       $stateProvider.state('login', {
       url: '/',
       templateUrl: 'templates/login.html',
@@ -32,25 +32,27 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       templateUrl: 'templates/login_driver.html',
       controller: 'LoginCtrl'
       })
-
+      $stateProvider.state('login_admin', {
+      url: '/login_admin',
+      templateUrl: 'templates/login_admin.html',
+      controller: 'LoginCtrl'
+      })
+      //Booking customer states
       $stateProvider.state('book', {
       url: '/book',
-      templateUrl: 'templates/create_booking.html',      
-      controller: 'BookCtrl',
-      // authenticated: true
-      })
-
-      $stateProvider.state('test_book', {
-      url: '/test_book',
       templateUrl: 'templates/test_book.html',      
-      controller: 'BookCtrl',
-      // authenticated: true
+      controller: 'BookCtrl',      
+      })
+      $stateProvider.state('booking_pending', {
+      url: '/booking_pending',
+      templateUrl: 'templates/booking_pending.html',      
+      //controller: 'BookCtrl',      
       })
 
       $stateProvider.state('logged_in', {
       url: '/logged_in',
       templateUrl: 'templates/test.html',
-      authenticated: true,
+      //authenticated: true,
       // controller: 'AppCtrl',
         data: {
           authorizedRoles: [USER_ROLES.customer]
@@ -164,21 +166,32 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 
 })
 
-.controller('BookCtrl', function($scope,$cookies) {
-
-    $scope.booking = {};
-    $scope.booking.pickup = "KTR";
-    $scope.booking.destination = "sri putri";
-    $scope.booking.timein = "11.11AM";
-    $scope.booking.driver = "Ahmad";
-  $scope.showdata = function(form){
-    $scope.booking.pickup = form.pickup;
-    $scope.booking.destination = form.destination;
-    $scope.booking.timein = form.timein;
-    $scope.booking.driver = form.driver;
-    console.log($scope.booking);
+.controller('BookCtrl', function($scope,$cookies,DriversModel,AuthService,BookingsModel) {  
+  $scope.getDrivers = function(){
+    DriversModel.all().success(function(response){
+      console.log();
+      data = response.data;
+    }).then(function(){
+      $scope.drivers = data;      
+    })
   };
-
+  $scope.getDrivers();
+  $scope.drivers = {};
+  $scope.booking = {}; 
+  $scope.createBooking = function(form){
+    // //for real implementation
+    // if(AuthService.getAuthStatus()){
+    //   //retrieve user cookie id and execute
+    // }
+    $cookies.put('user_id',5);
+    form.booking_status = "pending";
+    form.customer = $cookies.get('user_id',5);    
+    console.log(form);
+    BookingsModel.create(form).success(function(){
+      console.log("booking successful");
+      $state.go('booking_success');
+    })
+  }
 })
 
 

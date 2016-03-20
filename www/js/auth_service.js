@@ -1,6 +1,6 @@
 angular.module('AuthService', [])
  
-.service('AuthService', function($q, $http,$cookies, USER_ROLES, CustomersModel,DriversModel) {
+.service('AuthService', function($q, $http,$cookies, USER_ROLES, CustomersModel,DriversModel,AdminsModel) {
   var user_type = '';
   var email = '';
   var uid = '';
@@ -29,6 +29,8 @@ angular.module('AuthService', [])
       role = USER_ROLES.customer;
     }else if(type === "driver"){
       role = USER_ROLES.driver;
+    }else if(type === "admin"){
+      role = USER_ROLES.admin;
     }
   }
  
@@ -48,6 +50,12 @@ angular.module('AuthService', [])
       return false;
     }
   }
+  var getUserCookie = function (){
+    var user_cookie = $cookies.get('user_id');
+    if(user_cookie){
+      return user_cookie;
+    } 
+  }
  
   var login = function(mail, pw,type) {
     var data = {};
@@ -59,6 +67,9 @@ angular.module('AuthService', [])
         userService = CustomersModel;
       }else if(type === "driver") {
         userService = DriversModel;
+      }else if(type === "admin") {
+        userService = AdminsModel;
+        console.log(type);
       }      
       userService.all().success(function(response){
          data = response.data;
