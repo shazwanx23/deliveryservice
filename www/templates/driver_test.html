@@ -1,6 +1,10 @@
 <ion-content>
-	<div class="bar bar-subheader bar-balanced">
-	  <h2 class="title" >Sub Header</h2>
-	</div>
-	<p ng-model="uid">Driver is logged in</p> 
+	<ul class="list" ng-model="bookings">
+	  <li class="item" ng-repeat="booking in bookings">
+	  	
+		    {{booking.pickup}}:{{booking.destination}}:
+		    {{booking.timein}}:{{booking.booking_status}}
+		
+	  </li>        
+	</ul>
 </ion-content>

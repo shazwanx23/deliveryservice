@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'SimpleRESTIonic.services','AuthService','ngCookies'])
+angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'SimpleRESTIonic.services','AuthService','ngCookies','ngRoute'])
 
 .config(function (BackandProvider, $stateProvider, $urlRouterProvider, $httpProvider, USER_ROLES) {
     // change here to your appName
@@ -20,6 +20,10 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       $stateProvider.state('home', {
       url: '/register',
       templateUrl: 'templates/register_customer.html'
+      })
+      $stateProvider.state('splash', {
+      url: '/splash',
+      templateUrl: 'templates/splash.html'
       })
       //Login states
       $stateProvider.state('login', {
@@ -58,14 +62,38 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
           authorizedRoles: [USER_ROLES.customer]
         }
       })
+
       $stateProvider.state('driver_test', {
       url: '/driver_test',
       templateUrl: 'templates/driver_test.html',
-      authenticated: true,
-      // controller: 'AppCtrl',
-        data: {
-          authorizedRoles: [USER_ROLES.driver]
-        }
+      controller: 'DriverCtrl'
+      //   data: {
+      //     authorizedRoles: [USER_ROLES.driver]
+      //   }
+      })
+      $stateProvider.state('view_booking', {
+      url: '/view_booking',
+      templateUrl: 'templates/view_booking.html',
+      controller: 'ViewBookCtrl'
+      //   data: {
+      //     authorizedRoles: [USER_ROLES.driver]
+      //   }
+      })
+      $stateProvider.state('booking_accepted', {
+      url: '/booking_accepted',
+      templateUrl: 'templates/booking_accepted.html',
+      // controller: 'ViewBookCtrl'
+      //   data: {
+      //     authorizedRoles: [USER_ROLES.driver]
+      //   }
+      })
+      $stateProvider.state('booking_rejected', {
+      url: '/booking_rejected',
+      templateUrl: 'templates/booking_rejected.html',
+      // controller: 'ViewBookCtrl'
+      //   data: {
+      //     authorizedRoles: [USER_ROLES.driver]
+      //   }
       })
       
 
@@ -111,7 +139,7 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       console.log("driver");
       DriversModel.create(object)
       .then(function (result) {
-        $state.go('login');
+        $state.go('login_driver');
       });
     }
     
@@ -154,7 +182,7 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
     console.log(data.email);
     AuthService.login(data.email, data.password, data.user_type).then(function(authenticated) {
       $scope.uid = $cookies.get('user_id');
-      $state.go('logged_in', {}, {reload: true});
+      //$state.go('logged_in', {}, {reload: true});
       
     }, function(err) {
       var alertPopup = $ionicPopup.alert({
@@ -166,10 +194,9 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
 
 })
 
-.controller('BookCtrl', function($scope,$cookies,DriversModel,AuthService,BookingsModel) {  
+.controller('BookCtrl', function($state,$scope,$cookies,DriversModel,AuthService,BookingsModel) {  
   $scope.getDrivers = function(){
     DriversModel.all().success(function(response){
-      console.log();
       data = response.data;
     }).then(function(){
       $scope.drivers = data;      
@@ -189,11 +216,63 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
     console.log(form);
     BookingsModel.create(form).success(function(){
       console.log("booking successful");
-      $state.go('booking_success');
+      $state.go('booking_pending');
     })
   }
 })
-
+.controller('DriverCtrl', function($scope, $state,$cookies,BookingsModel,$routeParams,BookingsModel) {
+  $scope.showBooking = function(){
+    BookingsModel.all().success(function(response){
+      data = response.data;
+      console.log(data);
+    }).then(function(){
+      $scope.bookings = data;
+    })
+  };
+  $scope.showBooking();
+  // $scope.sendData = function(id){
+  //   BookingsModel.setBookingId(id).success(function(){
+  //     console.log("Booking id set");
+  //   })
+  // }
+})
+.controller('ViewBookCtrl', function($scope, $state,$cookies,BookingsModel,$routeParams,BookingsModel) {
+  // $scope.showOneBooking = function(){    
+  //   $scope.booking_id = BookingsModel.getBookingId();
+  //   console.log($scope.booking_id);
+  //   // BookingsModel.fetch($scope.booking_id).success(function(response){
+  //   //   data = response.data;
+  //   //   console.log(data);
+  //   // }).then(function(){
+  //   //   $scope.oneBooking = data;
+  //   // })
+  // }
+  // $scope.showOneBooking();
+  $scope.book = {};
+  $scope.showOneBooking = function(){
+    BookingsModel.fetch(1).success(function(response){
+      data = response;
+      console.log(data);
+    }).then(function(){
+      $scope.book = data;
+    })
+  }  
+  $scope.showOneBooking();
+  $scope.acceptBooking = function(form){
+    form.booking_status = "accepted";
+    BookingsModel.update(1,form).success(function(){
+      console.log("booking accepted");
+      $state.go('booking_accepted');
+    })
+  }
+  $scope.rejectBooking = function(form){
+    form.booking_status = "rejected";
+    BookingsModel.update(1,form).success(function(){
+      console.log("booking rejected");
+      $state.go('booking_rejected');
+    })
+  }
+})
 
 .controller('AppCtrl', function($scope, $state,$cookies, $ionicPopup, AuthService, AUTH_EVENTS) {
   $scope.uid = $cookies.get('user_id');;  

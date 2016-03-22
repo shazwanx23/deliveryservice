@@ -122,6 +122,15 @@ angular.module('SimpleRESTIonic.services', [])
         var service = this,
             baseUrl = '/1/objects/',
             objectName = 'bookings/';
+        var booking_id = '';
+
+        function setBookingId(id) {
+            booking_id = id;
+        }
+        
+        function getBookingId() {
+            return booking_id;
+        }
 
         function getUrl() {
             return Backand.getApiUrl() + baseUrl + objectName;

@@ -2,29 +2,35 @@
   <ion-content scroll="false">
 
     <div class="padding logo">
-      <h1>songhop</h1>
+      <h1>Logo Here</h1>
     </div>
-
-
+    <br />
+    <br />
+    <h3 class-"padding-left padding-right">Login as</h3>
     <div class="login-form">
-      <div class="card">
+      
         <div class="list">
-          <label class="item item-input">
-            <input type="text" ng-model="form.username" placeholder="Enter your {{ form.signingUp ? 'desired' : 'songhop' }} username">
-          </label>
+          <a href="/#/login" style="text-decoration:none;">
+            <button class="button button-block button-positive" >
+                Customer
+            </button>
+          </a>
+        
+      </div>
+      
+        <div class="list">
+          <a href="/#/login_driver" style="text-decoration:none;">
+            <button class="button button-block button-assertive" >
+                Driver
+            </button>
+          </a>
         </div>
-      </div>
-
-      <div class="padding-left padding-right">
-        <button class="button button-block action-button" ng-class="{'button-positive': !form.signingUp, 'button-balanced': form.signingUp}" ng-click="submitForm(form.username, form.signingUp)">
-          {{ form.signingUp ? 'Sign up' : 'Sign in' }}
-        </button>
-      </div>
+      
     </div>
 
 
-    <div class="padding signup-opt" ng-click="form.signingUp = !form.signingUp">
-      {{ form.signingUp ? 'Have an account? Sign in!' : 'Need an account? Sign up!' }}
+    <div class="padding signup-opt" >
+      Need an account? <a href="/#/register">Sign up!</a>
     </div>
 
   </ion-content>

@@ -1,6 +1,6 @@
 angular.module('AuthService', [])
  
-.service('AuthService', function($q, $http,$cookies, USER_ROLES, CustomersModel,DriversModel,AdminsModel) {
+.service('AuthService', function($state,$q, $http,$cookies, USER_ROLES, CustomersModel,DriversModel,AdminsModel) {
   var user_type = '';
   var email = '';
   var uid = '';
@@ -27,8 +27,10 @@ angular.module('AuthService', [])
     if(type === "customer"){
       console.log("type: " +(type === "customer"));
       role = USER_ROLES.customer;
+      $state.go('book');
     }else if(type === "driver"){
       role = USER_ROLES.driver;
+      $state.go('view_booking');
     }else if(type === "admin"){
       role = USER_ROLES.admin;
     }
@@ -76,9 +78,9 @@ angular.module('AuthService', [])
         }).then(function(){
           for(var i=0;i< data.length;i++){
             if(mail === data[i].email && pw === data[i].password){
-              //user authenticated
-              storeUserCredentials(data[i].email,data[i].id,user_type);
+              //user authenticated              
               $cookies.put('user_id', data[i].id);
+              storeUserCredentials(data[i].email,data[i].id,user_type);
               //console.log($cookies.get('user_id'));
               resolve('Login success.');    
             }
