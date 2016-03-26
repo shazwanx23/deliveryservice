@@ -47,10 +47,15 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
       templateUrl: 'templates/test_book.html',      
       controller: 'BookCtrl',      
       })
+      $stateProvider.state('edit_book', {
+      url: '/edit_book',
+      templateUrl: 'templates/edit_booking.html',      
+      controller: 'EditBookCtrl',      
+      })
       $stateProvider.state('booking_pending', {
       url: '/booking_pending',
       templateUrl: 'templates/booking_pending.html',      
-      //controller: 'BookCtrl',      
+      controller: 'BookPendingCtrl'      
       })
 
       $stateProvider.state('logged_in', {
@@ -212,14 +217,130 @@ angular.module('starter', ['ionic', 'backand', 'SimpleRESTIonic.controllers', 'S
     // }
     $cookies.put('user_id',5);
     form.booking_status = "pending";
-    form.customer = $cookies.get('user_id',5);    
-    console.log(form);
+    form.customer = $cookies.get('user_id',5);        
     BookingsModel.create(form).success(function(){
       console.log("booking successful");
+      $cookies.putObject('booking_info',form);
+      var a = $cookies.getObject('booking_info');
+      console.log(a.pickup);
       $state.go('booking_pending');
     })
   }
 })
+.controller('EditBookCtrl', function($state,$ionicPopup,$cookies,$scope,BookingsModel,DriversModel) {  
+    $scope.form = {};
+    $scope.booking = function(){
+      BookingsModel.getLatestBookingByCustomer(5).success(function(response){
+        data = response.data;
+        console.log(data[0]);
+        $scope.form = data[0];
+        $scope.form.timein = Number(data[0].timein);
+      }).error(function(){
+        console.log("get booking failed");
+      })
+    }
+
+    $scope.getDrivers = function(){
+      DriversModel.all().success(function(response){
+        data = response.data;
+      }).then(function(){
+        $scope.drivers = data;      
+      })
+    }
+    $scope.getDrivers();
+    $scope.booking();
+
+    $scope.updateBooking = function(form){
+       form.user_id = 5;
+       console.log(form.id);
+       console.log(form.pickup);
+       console.log(form.destination);
+       console.log(form.timein);
+       BookingsModel.update(form.id,form).success(function(){
+       console.log("Update successfull");
+        var alertPopup = $ionicPopup.alert({
+          title: 'Update Successful!',
+          template: 'Waiting response for driver'
+        });        
+       $cookies.putObject('booking_info',form);
+        })
+       $state.go('booking_pending');
+
+    }
+
+    // }
+  })
+.controller('BookPendingCtrl', function($state,$cookies,$q,$scope,$timeout,$ionicPopup,$interval,BookingsModel) {  
+  $scope.edit_booking = function(){
+    $state.go('edit_book');
+  }
+  //test if there is database change using timeout function
+  $scope.book_success = false;
+  $scope.book_fail = true;
+  function statusNotChanged(){   
+  }
+  function booking_accepted(){
+   var booking = BookingsModel.fetch(1)
+    if(booking.booking_status === "accepted"){
+      return true;
+    }else{
+      return false;
+    } 
+  }
+  function booking_rejected(){
+   var booking = BookingsModel.fetch(1)
+    if(booking.booking_status === "rejected"){
+      return true;
+    }else{
+      return false;
+    } 
+  }
+  var test2 = function(){
+    //if there is change, detect whether it is accepted or rejected
+    //if there isn't any change prompt user after 1 minute
+    //check database every 5 seconds  
+    var noChange = true;
+    
+    //   $interval(function(){
+    //     BookingsModel.fetch(1).then(function(response){
+    //       booking = response.data;
+    //       if(booking.booking_status === "pending"){
+    //         console.log("true");        
+    //       }else{
+    //         console.log("false");
+    //         noChange = false;            
+    //       }
+    //     })
+    //   },1000)  
+    //   console.log("noChange: " + noChange);
+    // // if(!noChange){
+    // //   $interval.cancel;
+    // //   console.log("noChange: " + noChange);
+    // // }
+    
+    
+  // $interval(function(){
+  //  var confirmPopup = $ionicPopup.confirm({
+  //    title: 'No response',
+  //    template: 'No response from driver.Wait another minute for response?'
+  //  });
+
+  //  confirmPopup.then(function(res) {
+  //    if(res) {
+  //      console.log('Wait another minute');
+  //    } else {
+  //      console.log('Select another driver');
+  //    }
+  //  });
+  // },10000)
+    
+      
+    
+  }
+
+
+  test2();
+  })
 .controller('DriverCtrl', function($scope, $state,$cookies,BookingsModel,$routeParams,BookingsModel) {
   $scope.showBooking = function(){
     BookingsModel.all().success(function(response){

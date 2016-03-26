@@ -1,0 +1,26 @@
+<ion-content>
+  <form ng-submit="updateBooking(form)">
+    <div class="list" ng-model="form">
+    	<label class="item item-input item-stacked-label">
+	      <span class="input-label">Pick up</span>
+	        <input type="text" ng-model="form.pickup" placeholder="Pickup" >	      
+	     </label>
+	     <label class="item item-input item-stacked-label">
+	      <span class="input-label">Destination</span>
+	        <input type="text" ng-model="form.destination" placeholder="Destination">
+	     </label>
+	     <label class="item item-input item-stacked-label">
+	      <span class="input-label">Time</span>
+	        <input type="number" ng-model="form.timein" placeholder="Timein">
+	     </label>
+	     
+    </div>
+    <hr />    
+      <h4>Select Driver</h4>
+      <ion-list ng-repeat="driver in drivers" >
+        <ion-radio ng-model="form.driver" ng-value="{{driver.id}}">{{driver.email}}</ion-radio>
+        <br />        
+      </ion-list>
+    <button class="button button-block button-positive" type="submit">Edit</button>     
+  </form>
+</ion-content>

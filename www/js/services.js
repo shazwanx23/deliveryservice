@@ -159,6 +159,11 @@ angular.module('SimpleRESTIonic.services', [])
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
+        service.getLatestBookingByCustomer = function(customer_id){
+            //service.all("bookings").getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;
+            //return $http.get(getUrl()).getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;;
+            return $http.get(getUrl()+"?pageSize=1&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22customer%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%225%22%20%20%7D%"+customer_id+"D&sort=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22id%22%2C%20%20%20%20%22order%22%3A%20%22desc%22%20%20%7D%5D&relatedObjects=true");
+        }
     })
 
     .service('LoginService', function (Backand) {
