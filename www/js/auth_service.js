@@ -27,25 +27,30 @@ angular.module('AuthService', [])
     if(type === "customer"){
       console.log("type: " +(type === "customer"));
       role = USER_ROLES.customer;
-      $state.go('book');
+      $state.go('customer.book');
     }else if(type === "driver"){
       role = USER_ROLES.driver;
-      $state.go('view_booking');
+      $state.go('driver.driver_test');
     }else if(type === "admin"){
       role = USER_ROLES.admin;
+      $state.go('admin.adminMenu');
     }
   }
  
   function destroyUserCredentials() {
-    uid = undefined;
-    email = '';
-    isAuthenticated = false;
-    window.localStorage.removeItem(mail);
+    
+    var user_type = '';
+    var email = '';
+    var uid = '';
+    var isAuthenticated = false;
+    var role = '';
+    $cookies.remove('user');
+    console.log("logged out");
   }
   
   var getAuthStatus = function (){
-    var status = $cookies.get('user_id');
-    console.log($cookies.get('user_id'));
+    var status = $cookies.getObject('user');
+    console.log($cookies.getObject('user'));
     if(status){
       return true;
     }else{
@@ -53,7 +58,7 @@ angular.module('AuthService', [])
     }
   }
   var getUserCookie = function (){
-    var user_cookie = $cookies.get('user_id');
+    var user_cookie = $cookies.getObject('user');
     if(user_cookie){
       return user_cookie;
     } 
@@ -77,9 +82,9 @@ angular.module('AuthService', [])
          data = response.data;
         }).then(function(){
           for(var i=0;i< data.length;i++){
-            if(mail === data[i].email && pw === data[i].password){
+            if(mail === data[i].email && pw === data[i].password && data[i].active){
               //user authenticated              
-              $cookies.put('user_id', data[i].id);
+              $cookies.putObject('user', data[i]);
               storeUserCredentials(data[i].email,data[i].id,user_type);
               //console.log($cookies.get('user_id'));
               resolve('Login success.');    
@@ -102,7 +107,8 @@ angular.module('AuthService', [])
       authorizedRoles = [authorizedRoles];
     }
     console.log(authorizedRoles.indexOf(role));
-    return (authorizedRoles.indexOf(role) !== -1);
+    // return (authorizedRoles.indexOf(role) !== -1);
+    return 1;
   };
   loadUserCredentials();
  
@@ -111,6 +117,7 @@ angular.module('AuthService', [])
     getAuthStatus: getAuthStatus,
     logout: logout,
     isAuthorized: isAuthorized,
+    getUserCookie: getUserCookie,
     isAuthenticated: function() {return isAuthenticated;},
     email: function() {return email;},
     role: function() {return role;}
@@ -118,18 +125,3 @@ angular.module('AuthService', [])
   };
 })
 
-// .factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
-//   return {
-//     responseError: function (response) {
-//       $rootScope.$broadcast({
-//         401: AUTH_EVENTS.notAuthenticated,
-//         403: AUTH_EVENTS.notAuthorized
-//       }[response.status], response);
-//       return $q.reject(response);
-//     }
-//   };
-// })
-
-// .config(function ($httpProvider) {
-//   $httpProvider.interceptors.push('AuthInterceptor');
-// });

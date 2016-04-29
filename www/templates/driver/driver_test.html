@@ -1,0 +1,43 @@
+<ion-view title="View Bookings">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+	
+		<ul class="list" ng-model="bookings" ng-show='showBookings'>
+		  <li class="item col-70" ng-repeat="booking in bookings" >		  	
+			    {{booking.pickup}}:{{booking.destination}}:
+			    {{booking.timein}}:{{booking.booking_status}}			
+		      
+		  	<button class="button button-medium button-balanced col-offset-20" ng-click='viewOneBooking(booking.id)'>
+            	View Details
+        	</button>
+          </li>        
+		</ul>
+
+	<!-- view one booking -->
+	<ion-list ng-model="book" ng-show='showOneBooking'>
+            <ion-item class="item-thumbnail-left">
+                <img>
+                <h2>Customer</h2>
+                
+            </ion-item>
+            <ion-item>Pick up location : {{book.pickup}}</ion-item>
+            <ion-item>Destination : {{book.destination}}</ion-item>
+            <ion-item>Time: {{book.timein}}</ion-item>
+            <ion-item>Status: {{book.booking_status}}</ion-item>
+            <a ui-sref="menu.reject" class="button button-stable button-block " ng-click="acceptBooking()">Accept</a>
+        <a ui-sref="menu.accept" class="button button-stable button-block " ng-click="rejectBooking()">Reject</a>
+        </ion-list>
+
+        <div ng-show='showBookingAccepted'>
+            <p>You have accepted the delivery request. Please proceed to pick the customer up from his/her pick up location.</p>
+        </div>      
+
+        <div ng-show='showBookingRejected'>
+            <p>You have rejected the customer</p>
+        </div>  
+        
+  </ion-content>
+</ion-view>
+

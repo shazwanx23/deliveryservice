@@ -1,0 +1,29 @@
+<ion-view title="Broadcast Messages">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <form ng-submit="sendMessage(message,decision.select)">
+    	<div class="list list-inset">
+		  <label class="item item-input">
+		    <input type="text" placeholder="Title" ng-model='message.title'>
+		  </label>
+		  <label class="item item-input">
+		    <input type="text" placeholder="Content" ng-model='message.content'>
+		  </label>
+		</div>
+		<label class="item item-input item-select">
+	      <div class="input-label">
+	        Send to
+	      </div>
+	      <select ng-model="decision.select">
+	        <option selected value="customer">Customer</option>
+	        <option value="driver">Driver</option>
+	        <option value="both">Customers & Drivers</option>
+	      </select>
+	    </label>
+		<button class="button button-block button-positive"  type="submit">Send</button>     
+    </form>
+
+  </ion-content>
+</ion-view>
