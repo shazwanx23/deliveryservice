@@ -1,0 +1,38 @@
+ 
+      <ion-modal-view>
+        <ion-header-bar class="bar bar-header bar-positive">
+          <h1 class="title">View Driver</h1>
+        </ion-header-bar>
+        <ion-content class="padding">
+          	<div class="card" ng-model='driver'>
+          		<div class="item item-text-wrap">
+				    Bookings Completed:  {{driver.completed}}
+				  </div>
+          		<div class="item item-text-wrap">
+				    Driver Rating {{driver.driver_rating}}/5
+				  </div>
+			  <div class="item item-text-wrap">
+			    {{driver.username}}
+			  </div>
+			  <div class="item item-text-wrap">
+			    {{driver.phoneNum}}
+			  </div>
+			</div>
+
+			<div ng-model='vehicle'>
+			  <div class="item item-text-wrap">
+			    Brand : {{vehicle.brand}}
+			  </div>
+			  <div class="item item-text-wrap">
+			    Model : {{vehicle.model}}
+			  </div>
+			  <div class="item item-text-wrap">
+			    Rate : RM{{vehicle.rate}}/km 
+			  </div>
+			</div>
+            <input type="button" class="button button-full button-positive" ng-click="closeModal()" value="Close">
+            
+          
+        </ion-content>
+      </ion-modal-view>
+    

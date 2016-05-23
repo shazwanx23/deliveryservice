@@ -1,0 +1,43 @@
+<ion-view title="Activate/Deactivate User">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <div class="item item-input-inset">
+        <button class="button button-medium button-calm" ng-click='toggleShow()' ng-show='!showCustomer'>
+            Show Customers
+        </button>
+        <button class="button button-medium button-balanced" ng-click='toggleShow()' ng-show='showCustomer'>
+            Show Drivers
+        </button>
+    </div>
+    <div ng-show='showCustomer'>
+    	<h3>List of customers</h3>   		
+	    <ul class="list" ng-model="customers">
+		  <li class="item" ng-repeat="customer in customers">		  	
+			    {{customer.email}}
+			    <label class="toggle toggle-positive">
+					<input type="checkbox" ng-model="customer.active" ng-change="toggleCustomerActive(customer)">
+		            <div class="track">
+		               <div class="handle"></div>
+		        	</div>
+		        </label>
+		  </li>
+		</ul>
+	</div>
+	<div ng-show='!showCustomer'>
+    	<h3>List of Drivers</h3>   		
+	    <ul class="list" ng-model="drivers">
+		  <li class="item" ng-repeat="driver in drivers">		  	
+			    {{driver.email}}
+			    <label class="toggle toggle-positive">
+					<input type="checkbox" ng-model="driver.active" ng-change="toggleDriverActive(driver)">
+		            <div class="track">
+		               <div class="handle"></div>
+		        	</div>
+		        </label>
+		  </li>
+		</ul>
+	</div>
+  </ion-content>
+</ion-view>

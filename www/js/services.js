@@ -79,7 +79,7 @@ angular.module('SimpleRESTIonic.services', [])
         };
 
         service.create = function (object) {
-            return $http.post(getUrl(), object);
+            return $http.post(getUrl(), object);  
         };
 
         service.update = function (id, object) {
@@ -89,7 +89,18 @@ angular.module('SimpleRESTIonic.services', [])
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
+        service.createBulk =function(json){
+            return $http.post(Backand.getApiUrl() + '/1/bulk',json);
+        }
 
+    })
+    .service('BulkService', function ($http, Backand) {
+        var service = this,
+            baseUrl = '/1/objects/',
+            objectName = 'customer_messages/';        
+        service.getToken =function(){
+            return $http('https://api.backand.com/token');
+        }        
     })
     .service('DriverMessagesModel', function ($http, Backand) {
         var service = this,
@@ -147,6 +158,9 @@ angular.module('SimpleRESTIonic.services', [])
 
         service.all = function () {
             return $http.get(getUrl());
+        };
+        service.allDeep = function () {
+            return $http.get(getUrl() + "?pageSize=20&pageNumber=1&deep=true&relatedObjects=true");
         };
 
         service.fetch = function (id) {
@@ -240,27 +254,61 @@ angular.module('SimpleRESTIonic.services', [])
             return $http.delete(getUrlForId(id));
         };
         service.getLatestBookingByCustomer = function(customer_id){
-            //service.all("bookings").getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;
-            //return $http.get(getUrl()).getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;;
-            return $http.get(getUrl()+"??pageSize=1&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22driver%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%224%22%20%20%7D%5D&sort=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22id%22%2C%20%20%20%20%22order%22%3A%20%22desc%22%20%20%7D%5D");
+            return $http.get(getUrl()+"?pageSize=1&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22customer%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22"+ customer_id +"%22%20%20%7D%5D&sort=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22id%22%2C%20%20%20%20%22order%22%3A%20%22desc%22%20%20%7D%5D");
         }
         service.getBookingsByCustomer = function(customer_id){
-            //service.all("bookings").getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;
-            //return $http.get(getUrl()).getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;;
             return $http.get(getUrl()+"?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22customer%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22" + customer_id +"%22%20%20%7D%5D&deep=true");
         }
         service.getLatestBookingByDriver = function(driver_id){
-            //service.all("bookings").getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;
-            //return $http.get(getUrl()).getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;;
             return $http.get(getUrl()+"?pageSize=1&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22driver%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22" +driver_id+ "%22%20%20%7D%5D&sort=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22id%22%2C%20%20%20%20%22order%22%3A%20%22desc%22%20%20%7D%5D");
         }
-        service.getBookingsByDriver = function(customer_id){
-            //service.all("bookings").getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;
-            //return $http.get(getUrl()).getList({ pageSize: 1, pageNumber: 1, filter: JSON.stringify([ {    "fieldName": "customer",    "operator": "in",    "value": customer_id  }]), sort: JSON.stringify([ {    "fieldName": "id",    "order": "desc"  }]) }).$object;;
-            return $http.get(getUrl()+"?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22driver%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22" + customer_id +"%22%20%20%7D%5D&deep=true");
+        service.getBookingsByDriver = function(driver_id){
+            return $http.get(getUrl()+"?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22driver%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22"+ driver_id +"%22%20%20%7D%5D&sort=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22id%22%2C%20%20%20%20%22order%22%3A%20%22desc%22%20%20%7D%5D");
         }
         //getBookingsbyCustomer
         //getBookingsbyDriver
+    })
+    .service('VehiclesModel', function ($http, Backand) {
+        var service = this,
+            baseUrl = '/1/objects/',
+            objectName = 'vehicle/';
+
+        function getUrl() {
+            return Backand.getApiUrl() + baseUrl + objectName;
+        }
+
+        function getUrlForId(id) {
+            return getUrl() + id;
+        }
+        function getUrlForEmail(email) {
+            return getUrl() + email;
+        }
+
+        service.all = function () {
+            return $http.get(getUrl());
+        };
+
+        service.fetch = function (id) {
+            return $http.get(getUrlForId(id));
+        };
+        
+
+        service.create = function (object) {
+            return $http.post(getUrl(), object);
+        };
+
+        service.update = function (id, object) {
+            return $http.put(getUrlForId(id), object);
+        };
+
+        service.delete = function (id) {
+            return $http.delete(getUrlForId(id));
+        };
+        //getVehiclebyDriver
+        service.getVehicleByDriver = function(driver_id){
+            return $http.get(getUrl()+"?pageSize=1&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22driver%22%2C%20%20%20%20%22operator%22%3A%20%22in%22%2C%20%20%20%20%22value%22%3A%20%22" + driver_id +"%22%20%20%7D%5D");
+        }
+
     })
 
     .service('LoginService', function (Backand) {

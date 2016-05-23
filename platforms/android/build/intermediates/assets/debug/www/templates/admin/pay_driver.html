@@ -1,0 +1,57 @@
+<ion-view title="Admin Home">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <h1>Pay Drivers</h1>
+    calculate driver's earnings
+    get all bookings according to driver
+    check status, must be paid_paypal
+    total the sum and display
+    <ul class="list" ng-model="drivers" ng-show='showDrivers'>
+		  <li class="item col-70" ng-repeat="driver in drivers" >		  	
+			    Driver : {{driver.email}}
+		      
+		  	<button class="button button-medium button-balanced col-offset-20" ng-click='viewEarnings(driver.id)' style='float:right;'>
+            	Show Earnings
+        	</button>
+          </li>        
+
+		</ul>
+
+    
+    
+	<!-- view one booking -->
+	<ion-list ng-show='!showDrivers'>
+            <button class="button button-medium button-positive" ng-click='reset()' style='float:left;'>
+                Back
+            </button>
+            <br />
+            <br />
+            <br />
+            <ul class="list" ng-model="paypalPaidBooking">
+			  <li class="item col-70" ng-repeat="booking in paypalPaidBooking" >		  	
+				    Pickup : {{booking.pickup}} <br/>
+			      	Destination : {{booking.destination}} <br/>
+			      	Distance : {{booking.distance}} <br/>
+			      	Price : {{booking.price}} <br/>
+			      	Status : {{booking.booking_status}} <br/>
+			  	<button class="button button-medium button-balanced col-offset-20" ng-click='payDriver(booking)' style='float:right;'>
+	            	Pay Driver
+	        	</button>
+	          </li>        
+
+			</ul>
+            <ion-item >
+            	Bookings Completed <br />
+            	and Paid via Paypal :<br/> {{completedBookings}}
+            </ion-item>
+            <ion-item class="item-thumbnail-left">
+            	Earnings : {{earning}}
+            </ion-item>
+            \
+        </ion-list>
+
+        
+  </ion-content>
+</ion-view>

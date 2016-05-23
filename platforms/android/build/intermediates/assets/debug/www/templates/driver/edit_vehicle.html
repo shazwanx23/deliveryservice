@@ -1,0 +1,50 @@
+<ion-view title="View Vehicle">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    	<!-- Show info only -->
+	    <div class="list list-inset" ng-model="vehicle" ng-show='showInfo'>
+			<div class="item">
+		      <h3 style="text-align:center">Vehicle Info</h3>
+		    </div>
+		    <div class="item">
+		      Brand : {{vehicle.brand}}
+		    </div>
+		    <div class="item">
+		      Model	: {{vehicle.model}}
+		    </div>
+		    <div class="item">
+		      Rate (RM/km) : {{vehicle.rate}}
+		    </div>
+		    <br />
+		    <button class="button button-positive" ng-click='showEditVehicle(vehicle)'>
+  				Edit Vehicle
+			</button>
+		</div>
+
+		<!-- To edit vehicle info -->
+		<div class="list" ng-show='!showInfo'>
+		  <label class="item item-input item-floating-label">
+		    <span class="input-label">Brand</span>
+		    <input type="text" ng-model='form.brand' placeholder="Honda">
+		  </label>
+		  <label class="item item-input item-floating-label">
+		    <span class="input-label">Model</span>
+		    <input type="text" ng-model='form.model' placeholder="Civic 2012">
+		  </label>
+		  <label class="item item-input item-floating-label">
+		    <span class="input-label">Rate (RM/km) </span>
+		    <input type="text" ng-model='form.rate' placeholder="Charge in Ringgit per kilometer">
+		  </label>
+		  <label class="item item-input item-floating-label" ng-hide='true'>
+		    <span class="input-label">Rate</span>
+		    <input type="text" placeholder="Civic 2012">
+		  </label>
+		  <br />
+		    <button class="button button-positive" ng-click='editVehicle(form)'>
+  				Update Vehicle Information
+			</button>
+		</div>
+  </ion-content>
+</ion-view>

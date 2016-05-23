@@ -1,0 +1,31 @@
+<ion-view title="Book">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+  <form ng-submit="showdata(form)" ng-model="form">
+    <div class="list">
+      <label class="item item-input">
+        <input type="text" ng-model="form.pickup" placeholder="Pick Up">
+      </label>
+      <label class="item item-input">
+        <input type="text" ng-model="form.destination" placeholder="Destination">
+      </label>
+      <label class="item item-input">
+        <input type="time" ng-model="form.timein" placeholder="Pick Up Time">
+      </label>
+    </div>
+    <button class="button button-block button-positive" type="submit">Book</button>     
+  </form>
+  <div class="list" ng-model="c">
+    <div class="item item-divider">
+      {{c.pickup}}, {{c.Destination}}  
+    </div>      
+    <div class="item item-divider">
+      {{c.timein}}, {{c.driver}}  
+    </div>      
+  </div>
+    
+  </ion-content>
+</ion-view>
+

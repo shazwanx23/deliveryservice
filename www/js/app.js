@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'ionic.rating', 'backand', 'app.routes','SimpleRESTIonic.controllers'
+angular.module('starter', ['ionic', 'ionic.rating', 'ngCordova','backand', 'app.routes','SimpleRESTIonic.controllers'
   , 'SimpleRESTIonic.services','AuthService','ngCookies','ngRoute','ng-fusioncharts','ionic-timepicker',
   ,'admin_controllers','public_controllers','customer_controllers','driver_controllers'])
 .run(function($ionicPlatform) {
@@ -23,7 +23,7 @@ angular.module('starter', ['ionic', 'ionic.rating', 'backand', 'app.routes','Sim
     }
   });
 })
-.config(function (ionicTimePickerProvider) {
+.config(function (ionicTimePickerProvider, BackandProvider) {
     var timePickerObj = {
       inputTime: (((new Date()).getHours() * 60 * 60) + ((new Date()).getMinutes() * 60)),
       format: 12,
@@ -32,6 +32,8 @@ angular.module('starter', ['ionic', 'ionic.rating', 'backand', 'app.routes','Sim
       closeLabel: 'Close'
     };
     ionicTimePickerProvider.configTimePicker(timePickerObj);
+    //make backand real-time
+    BackandProvider.runSocket(true);
   })
 
 .run(function ($state,$cookies,$rootScope, $location, AuthService) {

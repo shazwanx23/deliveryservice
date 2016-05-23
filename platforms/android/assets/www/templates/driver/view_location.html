@@ -1,0 +1,21 @@
+<ion-view title="View Location">
+	<style type="text/css">
+      .scroll {
+          height: 50%;
+      }
+       
+      #map {
+          width: 100%;
+          height: 100%;
+      }
+    </style>
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    
+    <div id="map" ></div>
+    <button class="button button-block button-positive" ng-click='updateLocation()'>Update My Location</button>     
+    <small>Always update your latest location so that your latest location will be shown to customers</small>
+  </ion-content>
+</ion-view>
