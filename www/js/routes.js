@@ -188,6 +188,18 @@ angular.module('app.routes', [])
           }     
         }
       })
+      .state('customer.map_debug', {
+      url: '/map_debug',      
+      data: {
+          authorizedRoles: [USER_ROLES.customer]
+          },
+      views: {
+            'customerContent' :{
+          templateUrl: 'templates/customer/map_debug.html',      
+          controller: 'MapDebugCtrl',      
+          }     
+        }
+      })
       //end customer states
 //**************************************************************************
       //start driver states

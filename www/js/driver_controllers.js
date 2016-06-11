@@ -1,7 +1,7 @@
 angular.module('driver_controllers', [])
 
 
-.controller('DriverAppCtrl', function($scope, $state,$cookies,DriversModel,AuthService) {
+.controller('DriverAppCtrl', function($scope, $state,DriversModel,AuthService) {
   $scope.driver = {};
   $scope.toggleAvailability = function(form){
     var driver = AuthService.getUserCookie();
@@ -96,7 +96,7 @@ angular.module('driver_controllers', [])
 })
 
 
-.controller('DriverCtrl', function($scope,$ionicPopup, $state,$cookies,BookingsModel
+.controller('DriverCtrl', function($scope,$ionicPopup, $state,$window,BookingsModel
   ,Backand,$window,BookingsModel,AuthService) {
   var driver = AuthService.getUserCookie();
   var getBookings = function(){
@@ -142,11 +142,12 @@ angular.module('driver_controllers', [])
   }
   $scope.acceptBooking = function(){
     console.log($scope.book.id);
-    $cookies.putObject('booking',$scope.book);
+    
     $scope.book.booking_status = 'accepted';
+    $window.localStorage.setItem('booking', JSON.stringify($scope.book));
     BookingsModel.update($scope.book.id,$scope.book)
     .success(function(){
-      console.log('booking accepted');      
+      console.log('booking accepted');            
       $state.go('driver.booking_accepted');
     })
   }
@@ -229,10 +230,11 @@ function geocodeAddress(geocoder, resultsMap) {
 
   
 })
-.controller('BookingAcceptedCtrl', function($scope, $state,$ionicPopup,$cookies,BookingsModel,$routeParams
+.controller('BookingAcceptedCtrl', function($scope, $state,$ionicPopup,$window,BookingsModel,$routeParams
   ,$timeout,BookingsModel) {
   $scope.booking = {};
-  $scope.booking = $cookies.getObject('booking');  
+  $scope.booking = JSON.parse($window.localStorage.getItem('booking'));
+
   console.log($scope.booking);
 
   $scope.bookingComplete = function(){
@@ -304,17 +306,17 @@ function geocodeAddress(geocoder, resultsMap) {
   },2000)
   
 })
-.controller('PaidCtrl', function($scope, $state,$ionicPopup,$cookies,Backand,BookingsModel){
+.controller('PaidCtrl', function($scope, $state,$ionicPopup,$window,Backand,BookingsModel){
   $scope.booking = {};
-  // get current booking from cookies
-  $scope.booking = $cookies.getObject('booking');
+  
+  $scope.booking = JSON.parse($window.localStorage.getItem('booking'));
   //listen for database change
   console.log($scope.booking);
   Backand.on('items_updated',function(){
     BookingsModel.fetch($scope.booking.id)
       .success(function(response){
         $scope.booking = response;
-        if($scope.booking.booking_status === 'paid_paypal'){
+        if($scope.booking.booking_status == 'paid_paypal'){
           console.log('customer has paid');
           var alertPopup = $ionicPopup.alert({
             title: 'Customer Paid!',

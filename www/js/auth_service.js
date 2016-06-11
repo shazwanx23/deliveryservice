@@ -1,6 +1,6 @@
 angular.module('AuthService', [])
  
-.service('AuthService', function($state,$q, $http,$window, USER_ROLES, CustomersModel,DriversModel,AdminsModel) {
+.service('AuthService', function($state,$q, $http,$window,$ionicPopup,USER_ROLES, CustomersModel,DriversModel,AdminsModel) {
 
   var user_type = '';
   var email = '';
@@ -35,7 +35,7 @@ angular.module('AuthService', [])
       $state.go('driver.driver_test');
     }else if(type === "admin"){
       role = USER_ROLES.admin;
-      $state.go('admin.broadcast_messages');
+      $state.go('admin.view_statistics');
     }
   }
  
@@ -79,23 +79,28 @@ angular.module('AuthService', [])
         userService = AdminsModel;
         console.log(type);
       }      
-      userService.all().success(function(response){
-         data = response.data;
-        }).then(function(){
-          for(var i=0;i< data.length;i++){
-            if(mail === data[i].email && pw === data[i].password && data[i].active){
-              //user authenticated              
-              user = data[i];
-              $window.localStorage.setItem('user', JSON.stringify(data[i]));
-              storeUserCredentials(data[i].email,data[i].id,user_type);              
-              resolve('Login success.');    
-            }
-            if(i=== data.length){
-              reject('Login Failed.');
-            }
-          //success message
-          };
-        });
+      userService.emailIsUnique(mail)
+      .success(function(response){
+        var record = response.data[0];
+        if(response.data[0]){
+          console.log(response.data[0]);
+          var data = response.data[0];
+          if(mail === data.email && pw === data.password && data.active){
+            $window.localStorage.setItem('user', JSON.stringify(data));
+            storeUserCredentials(data.email,data.id,user_type);              
+          }else{
+            var alertPopup = $ionicPopup.alert({
+              title: 'Password do not match!',
+              template: 'Your passwords do not match or there is a problem with your account.'
+            }); 
+          }
+        }else{
+           var alertPopup = $ionicPopup.alert({
+            title: 'No records found!',
+            template: 'No record with that email address was found.'
+          });
+        }
+      })
     });
   };
  
@@ -127,10 +132,10 @@ angular.module('AuthService', [])
 })
 
 .service('BackandService', function($http,Backand) {
-  function makePayPalPayment(amount){
+  function makePayPalPayment(amount,booking_id){
     return $http({
       method: 'GET',
-      url: Backand.getApiUrl() + '/1/objects/action/bookings/21',
+      url: Backand.getApiUrl() + '/1/objects/action/bookings/' + booking_id,
       params: {
         name: 'PayPalPayment',
         parameters: {
@@ -140,10 +145,10 @@ angular.module('AuthService', [])
       }
     });
   }
-  function makePayPalApproval(payerId, paymentId){
+  function makePayPalApproval(payerId, paymentId,booking_id){
    return $http({
       method: 'GET',
-      url: Backand.getApiUrl() + '/1/objects/action/bookings/21',
+      url: Backand.getApiUrl() + '/1/objects/action/bookings/' + booking_id,
       params: {
         name: 'PayPalPayment',
         parameters: {

@@ -1,6 +1,6 @@
 <ion-view title="Register" >
   <ion-content ng-controller="registerCtrl">
-     <form ng-submit="register(vm)">
+     <form name="registerForm" ng-submit="register(vm)" novalidate>
       <div style="height:40%;width:60%;margin-top:20%;margin-left:20%;" >
 
         <div class='row'>
@@ -11,22 +11,33 @@
         <div class='row'>
           <div class='col'>
              <label class="item item-input">
-              <input type="text" placeholder="Email" ng-model="vm.email">
+              <input type="email" placeholder="Email" class="form-control" ng-model="vm.email" name='email'required>              
             </label>
+            <p ng-show="registerForm.email.$invalid && registerForm.email.$touched" style="color:red">You email is required.</p>
+            <p ng-show="registerForm.email.$invalid && registerForm.email.$touched" style="color:red">Email address not valid</p>            
+            <!-- <p ng-show="myForm.email.$error.required">* Password is required</p>
+            <p ng-show="myForm.email.$error.minlength">* Password must be longer than 6 characters</p> -->
           </div>
         </div>
+
         <div class='row'>
           <div class='col'>
             <label class="item item-input">
-              <input type="password" placeholder="Password" ng-model="vm.password">
+              <input type="password" placeholder="Password" class="form-control" ng-model="vm.password" ng-minlength="6" ng-maxlength="12" name='password'>              
             </label>
+            <p ng-show="registerForm.password.$error.minlength && registerForm.password.$touched" style="color:red">Password is too short.</p>
+            <p ng-show="registerForm.password.$error.maxlength && registerForm.password.$touched" style="color:red">Password is too long.</p> 
+            <p ng-show="registerForm.password.$error.minlength || registerForm.password.$error.maxlength && registerForm.password.$touched" style="color:red">Password must be between 6 and 12 characters</p>            
           </div>
         </div>
+
         <div class='row'>
           <div class='col'>
             <label class="item item-input">
-              <input type="number" placeholder="Phone Number" ng-model="vm.phoneNum">
+              <input type="number" placeholder="Phone Number" class="form-control" ng-model="vm.phoneNum" name='phoneNum' ng-minlength="10" ng-maxlength="11" required>
             </label>
+            <p ng-show="registerForm.phoneNum.$error.minlength || registerForm.phoneNum.$error.maxlength && registerForm.phoneNum.$touched" style="color:red">Phone Number not valid.</p>            
+            <p ng-show="registerForm.phoneNum.$error.minlength || registerForm.phoneNum.$error.maxlength && registerForm.phoneNum.$touched" style="color:red">Phone Number must be between 10 and 12 characters</p>            
           </div>
         </div>
         <div class='row'>
@@ -35,7 +46,7 @@
                 <div class="input-label">
                   Role
                 </div>
-                <select ng-model="decision.select">
+                <select ng-model="decision.select" class="form-control" required>
                   <option selected value="customer">Customer</option>
                   <option value="driver">Driver</option>
                 </select>
@@ -44,7 +55,7 @@
         </div>
         <div class='row'>
           <div class='col'>
-             <button class="button button-block button-positive" type="submit">Register</button>    
+             <button class="button button-block button-positive" ng-disabled="registerForm.$invalid" type="submit">Register</button>    
           </div>
         </div>
 

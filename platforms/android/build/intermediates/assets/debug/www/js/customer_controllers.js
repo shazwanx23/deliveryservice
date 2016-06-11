@@ -73,209 +73,202 @@ angular.module('customer_controllers', [])
 })
 
 .controller('BookCtrl', function($state,$scope,$ionicPopup,$cordovaGeolocation,
-  $timeout, $ionicPlatform,$ionicModal,DriversModel,
+  $timeout,$window, $ionicPlatform,$ionicModal,DriversModel,
   AuthService,BookingsModel,ionicTimePicker,VehiclesModel) {  
-
-  $scope.form = {};
-  // $scope.driversLocation = {};
-  $scope.place = '';
-    //Declare all states
-  $scope.showBook = true;
-  $scope.showSelectDrivers = true;
-  
-  //Declare functions to toggle between states
-  $scope.reset = function(){
-    $scope.showBook = true;
-    $scope.showSelectDrivers = false;
-  }
-  // estimate how far driver is from customer's location
-  // start maps
-    $ionicPlatform.ready(function() {
-
-    $cordovaGeolocation.getCurrentPosition({
-      timeout:10000,
-      enableHighAccuracy:true
-    }).then(function(position) {
-      $scope.getDrivers();
-      // console.log(position);
-      var latLng = new google.maps.LatLng(position.coords.latitude
-                                         ,position.coords.longitude);
-      
-      $scope.latitude = position.coords.latitude;
-      $scope.longitude = position.coords.longitude;
-      $scope.form.pickup =  $scope.latitude + "," +$scope.longitude ;
-
-
-      var mapOptions = {
-        center: latLng,
-        zoom: 11,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
-
-      $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-      google.maps.event.addListenerOnce($scope.map, 'idle', function(){
- 
-        var marker = new google.maps.Marker({
-            map: $scope.map,
-            animation: google.maps.Animation.DROP,
-            position: latLng
-        }); 
-         // initAutocomplete
-      // Create the search box and link it to the UI element.
-      var input = document.getElementById('pac-input');
-      var searchBox = new google.maps.places.SearchBox(input);
-      $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-      // Bias the SearchBox results towards current map's viewport.
-      $scope.map.addListener('bounds_changed', function() {
-        searchBox.setBounds($scope.map.getBounds());
-      });
-
-      var markers = [];
-      // Listen for the event fired when the user selects a prediction and retrieve
-      // more details for that place.
-      searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-        // $scope.form.destination = $scope.searchBox;
-        $scope.place = places[0].formatted_address;
-        console.log($scope.place[0].formatted_address);
-        $scope.initMap();
-        if (places.length == 0) {
-          return;
-        }
-
-        // Clear out the old markers.
-        markers.forEach(function(marker) {
-          marker.setMap(null);
-
-        });
-         var marker = new google.maps.Marker({
-            map: $scope.map,
-            animation: google.maps.Animation.DROP,
-            position: latLng
-          });    
-        markers = [];
-
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        $scope.form.destination = places[places.length-1].name;
-        places.forEach(function(place) {
-          var icon = {
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25)
-          };
-          
-          // Create a marker for each place.
-          markers.push(new google.maps.Marker({
-            map: $scope.map,
-            icon: icon,
-            title: place.name,
-            position: place.geometry.location
-          }));
-
-          if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
-        });
-        $scope.map.fitBounds(bounds);
-      });
-      // end initAutocomplete
-       
-        var infoWindow = new google.maps.InfoWindow({
-              content: "Here I am!"
-          });
-       
-        google.maps.event.addListener(marker, 'click', function () {
-            infoWindow.open($scope.map, marker);
-        });
-      });
-    //start distance
-    $scope.initMap = function() {
-        var bounds = new google.maps.LatLngBounds;
-        var markersArray = [];
-
-        var origin1 = {lat: $scope.latitude, lng: $scope.longitude}
-        var destinationA = $scope.place;
-         console.log($scope.driversLocation[0]);
-         console.log(origin1);
-
-        var destinationIcon = 'https://chart.googleapis.com/chart?' +
-            'chst=d_map_pin_letter&chld=D|FF0000|000000';
-        var originIcon = 'https://chart.googleapis.com/chart?' +
-            'chst=d_map_pin_letter&chld=O|FFFF00|000000';
-
-        var geocoder = new google.maps.Geocoder;
-
-        var service = new google.maps.DistanceMatrixService;
-        service.getDistanceMatrix({
-          origins: [origin1],
-          destinations: [destinationA],
-          travelMode: google.maps.TravelMode.DRIVING,
-          unitSystem: google.maps.UnitSystem.METRIC,
-          avoidHighways: false,
-          avoidTolls: false
-        }, function(response, status) {
-          if (status !== google.maps.DistanceMatrixStatus.OK) {
-            alert('Error was: ' + status);
-          } else {
-            // console.log(response);
-            var originList = response.originAddresses;
-            var destinationList = response.destinationAddresses;            
-            $scope.form.destination_geocode = response.destinationAddresses[0];
-            console.log($scope.form.destination_geocode);
-            var showGeocodedAddressOnMap = function(asDestination) {
-              var icon = asDestination ? destinationIcon : originIcon;
-              return function(results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                  $scope.map.fitBounds(bounds.extend(results[0].geometry.location));
-                  if(asDestination){
-                      markersArray.push(new google.maps.Marker({
-                      map: $scope.map,
-                      position: results[0].geometry.location,
-                      icon: icon
-                    }));
-                  }
-                } else {
-                  alert('Geocode was not successful due to: ' + status);
-                }
-              };
-            };
-
-            for (var i = 0; i < originList.length; i++) {
-              var results = response.rows[i].elements;
-              geocoder.geocode({'address': originList[i]},
-                  showGeocodedAddressOnMap(false));
-              for (var j = 0; j < results.length; j++) {
-                geocoder.geocode({'address': destinationList[j]},
-                    showGeocodedAddressOnMap(true));
-                     console.log( originList[i] + ' to ' + destinationList[j] +
-                                         ': ' + results[j].distance.text + ' in ' +
-                                         results[j].duration.text + '<br>');
-                $scope.form.distance = parseFloat(results[j].distance.text);
-                console.log($scope.form.distance);
-              }
+  var user = JSON.parse($window.localStorage.getItem('user'));
+  console.log(user);
+  $scope.form = {};  
+  $scope.place = ''; 
+    $scope.initialize = function(){
+      $ionicPlatform.ready(function() {
+            // $cordovaGeolocation.getCurrentPosition
+            navigator.geolocation.getCurrentPosition({
+            timeout:10000,
+            enableHighAccuracy:true
+          }).then(function(position) {
+            $scope.getDrivers();      
+            var latLng = new google.maps.LatLng(position.coords.latitude
+                                               ,position.coords.longitude);      
+            $scope.latitude = position.coords.latitude;
+            $scope.longitude = position.coords.longitude;
+            $scope.form.pickup =  $scope.latitude + "," +$scope.longitude ;
+            var mapOptions = {
+              center: latLng,
+              zoom: 11,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
             }
+            $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+       
+              var marker = new google.maps.Marker({
+                  map: $scope.map,
+                  animation: google.maps.Animation.DROP,
+                  position: latLng
+              }); 
+            // initAutocomplete
+            // Create the search box and link it to the UI element.
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+            $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    
+            // Bias the SearchBox results towards current map's viewport.
+            $scope.map.addListener('bounds_changed', function() {
+              searchBox.setBounds($scope.map.getBounds());
+            });
+    
+            var markers = [];
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', function() {
+              var places = searchBox.getPlaces();
+              // $scope.form.destination = $scope.searchBox;
+              $scope.place = places[0].formatted_address;
+              console.log($scope.place[0].formatted_address);
+              $scope.initMap();
+              if (places.length == 0) {
+                return;
+              }
+    
+              // Clear out the old markers.
+              markers.forEach(function(marker) {
+                marker.setMap(null);
+    
+              });
+               var marker = new google.maps.Marker({
+                  map: $scope.map,
+                  animation: google.maps.Animation.DROP,
+                  position: latLng
+                });    
+              markers = [];
+    
+              // For each place, get the icon, name and location.
+              var bounds = new google.maps.LatLngBounds();
+              $scope.form.destination = places[places.length-1].name;
+              places.forEach(function(place) {
+                var icon = {
+                  url: place.icon,
+                  size: new google.maps.Size(71, 71),
+                  origin: new google.maps.Point(0, 0),
+                  anchor: new google.maps.Point(17, 34),
+                  scaledSize: new google.maps.Size(25, 25)
+                };
+                
+                // Create a marker for each place.
+                markers.push(new google.maps.Marker({
+                  map: $scope.map,
+                  icon: icon,
+                  title: place.name,
+                  position: place.geometry.location
+                }));
+    
+                if (place.geometry.viewport) {
+                  // Only geocodes have viewport.
+                  bounds.union(place.geometry.viewport);
+                } else {
+                  bounds.extend(place.geometry.location);
+                }
+              });
+              $scope.map.fitBounds(bounds);
+            });
+            // end initAutocomplete
+             
+              var infoWindow = new google.maps.InfoWindow({
+                    content: "Here I am!"
+                });
+             
+              google.maps.event.addListener(marker, 'click', function () {
+                  infoWindow.open($scope.map, marker);
+              });
+            });
+          //start distance
+          $scope.initMap = function() {
+              var bounds = new google.maps.LatLngBounds;
+              var markersArray = [];
+    
+              var origin1 = {lat: $scope.latitude, lng: $scope.longitude}
+              var destinationA = $scope.place;
+               console.log($scope.driversLocation[0]);
+               console.log(origin1);
+    
+              var destinationIcon = 'https://chart.googleapis.com/chart?' +
+                  'chst=d_map_pin_letter&chld=D|FF0000|000000';
+              var originIcon = 'https://chart.googleapis.com/chart?' +
+                  'chst=d_map_pin_letter&chld=O|FFFF00|000000';
+    
+              var geocoder = new google.maps.Geocoder;
+    
+              var service = new google.maps.DistanceMatrixService;
+              service.getDistanceMatrix({
+                origins: [origin1],
+                destinations: [destinationA],
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.METRIC,
+                avoidHighways: false,
+                avoidTolls: false
+              }, function(response, status) {
+                if (status !== google.maps.DistanceMatrixStatus.OK) {
+                  alert('Error was: ' + status);
+                } else {
+                  // console.log(response);
+                  var originList = response.originAddresses;
+                  var destinationList = response.destinationAddresses;            
+                  $scope.form.destination_geocode = response.destinationAddresses[0];
+                  console.log($scope.form.destination_geocode);
+                  var showGeocodedAddressOnMap = function(asDestination) {
+                    var icon = asDestination ? destinationIcon : originIcon;
+                    return function(results, status) {
+                      if (status === google.maps.GeocoderStatus.OK) {
+                        $scope.map.fitBounds(bounds.extend(results[0].geometry.location));
+                        if(asDestination){
+                            markersArray.push(new google.maps.Marker({
+                            map: $scope.map,
+                            position: results[0].geometry.location,
+                            icon: icon
+                          }));
+                        }
+                      } else {
+                        alert('Geocode was not successful due to: ' + status);
+                      }
+                    };
+                  };
+    
+                  for (var i = 0; i < originList.length; i++) {
+                    var results = response.rows[i].elements;
+                    geocoder.geocode({'address': originList[i]},
+                        showGeocodedAddressOnMap(false));
+                    for (var j = 0; j < results.length; j++) {
+                      geocoder.geocode({'address': destinationList[j]},
+                          showGeocodedAddressOnMap(true));
+                           console.log( originList[i] + ' to ' + destinationList[j] +
+                                               ': ' + results[j].distance.text + ' in ' +
+                                               results[j].duration.text + '<br>');
+                      $scope.form.distance = parseFloat(results[j].distance.text);
+                      console.log($scope.form.distance);
+                    }
+                  }
+                }
+              });
           }
-        });
-      }
-        function deleteMarkers(markersArray) {
-        for (var i = 0; i < markersArray.length; i++) {
-          markersArray[i].setMap(null);
-        }
-        markersArray = [];
-      }
-      // $scope.initMap();
-    //end distance
-    }, function(error) {
-        console.log(error);
-    });
-  })
+          function deleteMarkers(markersArray) {
+            for (var i = 0; i < markersArray.length; i++) {
+              markersArray[i].setMap(null);
+            }
+            markersArray = [];
+          }
+            // $scope.initMap();
+          //end distance
+          }, function(error) {
+              console.log(error);
+          });
+        })
+  }
+   var getMap = $timeout(function(){
+     // A confirm dialog
+    //$scope.showConfirm();
+    console.log('get map');
+     $scope.initialize();
+  },1000)
+
   
   //end maps
   //start timepicker
@@ -392,9 +385,9 @@ angular.module('customer_controllers', [])
             }
           }
         });
-    //end get available drivers distance from customer    
+  //   //end get available drivers distance from customer    
     }
-    console.log($scope.driversLocation);
+  //   console.log($scope.driversLocation);
 
 
   }
@@ -435,7 +428,7 @@ angular.module('customer_controllers', [])
             console.log("counter : " + $scope.counter);  
             $scope.driver_rating = ($scope.rating_total/$scope.counter);         
             $scope.driver_rating = $scope.driver_rating.toFixed(1);
-            $scvope.driver.driver_rating = $scope.driver_rating;
+            $scope.driver.driver_rating = $scope.driver_rating;
             $scope.driver.completed = $scope.counter;
             if($scope.rating_total == 0){
               $scope.driver.driver_rating = 0;
@@ -461,7 +454,7 @@ angular.module('customer_controllers', [])
     }
     //end user checks
   //end view drivers profile
-  // $scope.getDrivers();
+  $scope.getDrivers();
   $scope.drivers = {};
   $scope.booking = {}; 
   $scope.createBooking = function(form){
@@ -564,14 +557,35 @@ angular.module('customer_controllers', [])
         }
       })
   })   
-  $scope.edit_booking = function(){    
+  $scope.cancel_booking = function(){    
     BookingsModel.getLatestBookingByCustomer(customer.id)
       .success(function(response){
-        console.log('successful api call');
-        var latestBooking = response.data;
-        console.log(latestBooking[0].booking_status);
-        if(latestBooking[0].booking_status === 'pending'){
-          $state.go('customer.edit_book');
+        var latestBooking = response.data[0];
+        console.log(response.data[0]);
+        if(latestBooking.booking_status === 'pending'){
+          var confirmPopup = $ionicPopup.confirm({
+             title: 'Are you sure?.',
+             template: 'Click OK to cancel booking'
+           });
+          confirmPopup.then(function(res) {
+             if(res) {
+              latestBooking.booking_status = 'cancelled';
+              console.log(latestBooking);
+              BookingsModel.update(latestBooking.id,latestBooking)
+              .success(function(){
+                $ionicPopup.alert({
+                  title: 'Booking Cancelled',
+                  template: 'You can make a new booking.'
+                }); 
+                $state.go('customer.book');
+              })             
+              
+             } else {
+               console.log('redirect to select driver');
+               $state.go('customer.select_driver');
+             }
+
+       });
         }else{
           $ionicPopup.alert({
             title: 'Cannot Edit Book!',
@@ -603,15 +617,7 @@ angular.module('customer_controllers', [])
            $state.go('customer.select_driver');
          }
        });
-  };
-  
-
-   var userWait = $timeout(function(){
-     // A confirm dialog
-    //$scope.showConfirm();
-    console.log('prompt user');
-     $scope.promptUser();
-  },5000)
+  };  
   //start map
  
  $scope.init = function(){
@@ -765,28 +771,34 @@ angular.module('customer_controllers', [])
               });
               $state.go('customer.pay');
             }
-            if($scope.book.booking_status == 'paid'){
-              //redirect to make payment
-              console.log('Paid!');
-              var alertPopup = $ionicPopup.alert({
-                title: 'Payment Received!',
-                template: 'Thank you.'
-              });
-              $state.go('customer.rate_driver');
-            }
+            // if($scope.book.booking_status == 'paid'){
+            //   //redirect to make payment
+            //   console.log('Paid!');
+            //   var alertPopup = $ionicPopup.alert({
+            //     title: 'Payment Received!',
+            //     template: 'Thank you.'
+            //   });
+            //   $state.go('customer.rate_driver');
+            // }
         })
     })
   })
 .controller('CustomerPayCtrl', function($scope, $state, $ionicPopup
   ,$window,BookingsModel,DriversModel,AuthService,BackandService,Backand) {
   $scope.booking = {};
+  $scope.oldBooking = {};
   var customer = AuthService.getUserCookie();
+  console.log(customer.id);
   console.log('in customer pay controller');
+  BookingsModel.getLatestBookingByCustomer(customer.id)
+  .success(function(response){
+    $scope.oldBooking = response.data[0];
+  })
   Backand.on('items_updated',function(){
     BookingsModel.getLatestBookingByCustomer(customer.id)
     .success(function(response){
       $scope.booking = response.data[0];
-      console.log($scope.booking);
+      console.log($scope.booking.booking_status);
       if($scope.booking.booking_status == 'paid'){
         var alertPopup = $ionicPopup.alert({
             title: 'Payment Confirmed!',
@@ -805,14 +817,17 @@ angular.module('customer_controllers', [])
     // var form = angular.element(document.querySelector('#paypal-form'))[0];
 
     //Call Backand action to prepare the payment
+    console.log(customer.id);
     BookingsModel.getLatestBookingByCustomer(customer.id)
     .success(function(response){
-      $scope.booking = response.data[0]
+      $scope.booking = response.data[0];
+      console.log(response.data[0]);
     }).then(function(){
-      var paypalUrl = BackandService.makePayPalPayment($scope.booking.price)          
+      $scope.booking.price = parseInt($scope.booking.price);
+      var paypalUrl = BackandService.makePayPalPayment($scope.booking.price,$scope.booking.id)          
       .then(function (payment) {
         var paypalResponse = payment;
-        // console.log(paypalResponse);
+        console.log(paypalResponse);
         //redirect to PayPal - for user approval of the payment
         $window.location.href = paypalResponse.data;
         $scope.booking.booking_status = 'paid_paypal';
@@ -834,22 +849,31 @@ angular.module('customer_controllers', [])
   //end paypal
 })
 .controller('RateDriverCtrl', function($scope, $state, $ionicPopup,$location
-  ,BookingsModel,DriversModel,AuthService, ratingConfig,BackandService) {
+  ,$window,$timeout,BookingsModel,DriversModel,AuthService, ratingConfig,BackandService) {  
   $scope.driver = {};
   $scope.booking = {};
   $scope.rating = {};
   $scope.rating.rate = 3;
   $scope.rating.max = 5;
   $scope.customer = AuthService.getUserCookie();
-  var alertPopup = $ionicPopup.alert({
-      title: 'Payment Received!',
-      template: 'Thank you for paying'
-    });
-  if ($location.search().PayerID && $location.search().paymentId) {
+  
+  BookingsModel.getLatestBookingByCustomer($scope.customer.id)
+  .success(function(response){
+    $scope.booking = response.data[0];
+    console.log($scope.booking.driver);
+    DriversModel.fetch($scope.booking.driver)
+      .success(function(response){
+        $scope.driver = response;
+        console.log($scope.driver);
+      })
+  })
+  .then(function(){
+    if ($location.search().PayerID && $location.search().paymentId) {
         // console.log($location.search().PayerID );
         // console.log($location.search().paymentId);
         //Call Backand action to approve the payment by the facilitator
-        BackandService.makePayPalApproval($location.search().PayerID, $location.search().paymentId)
+        $scope.booking.price = parseInt($scope.booking.price);
+        BackandService.makePayPalApproval($location.search().PayerID, $location.search().paymentId,$scope.booking.price)
           .then(function (payment) {
             // remove PayPal query string from url
             $location.url($location.path());
@@ -857,32 +881,20 @@ angular.module('customer_controllers', [])
             + payment.data.transactions[0].amount.total;
           }
         )
-    }
-  $scope.getData = function(){
-    BookingsModel.getLatestBookingByCustomer($scope.customer.id)
-      .success(function(response){
-        $scope.booking = response.data[0];
-        console.log($scope.booking.driver);
-        DriversModel.fetch($scope.booking.driver)
-          .success(function(response){
-            $scope.driver = response;
-            console.log($scope.driver);
-          })
-      })
-  }
+    }  
+  })
+  
+  
   $scope.rateDriver = function(rating){
     $scope.booking.driver_rating = rating;
     BookingsModel.update($scope.booking.id,$scope.booking)
     .success(function(){
       console.log('Rating inserted');
-      var alertPopup = $ionicPopup.alert({
-        title: 'Rating inserted!',
-        template: 'Thank you for using this service.'
-      });
       $state.go('customer.book');
+      $window.location.reload();
     })
   }
-  $scope.getData();
+  // $scope.getData();
 })
 .controller('PayPalTestCtrl', function($scope,$window,BackandService) {
   

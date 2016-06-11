@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('starter', ['ionic', 'ionic.rating', 'ngCordova','backand', 'app.routes','SimpleRESTIonic.controllers'
   , 'SimpleRESTIonic.services','AuthService','ngCookies','ngRoute','ng-fusioncharts','ionic-timepicker',
-  ,'admin_controllers','public_controllers','customer_controllers','driver_controllers'])
+  ,'admin_controllers','public_controllers','customer_controllers','driver_controllers','booking_controllers'])
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {

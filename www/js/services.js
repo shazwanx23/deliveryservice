@@ -34,9 +34,10 @@ angular.module('SimpleRESTIonic.services', [])
         service.fetch = function (id) {
             return $http.get(getUrlForId(id));
         };
-        // service.fetch = function (id) {
-        //     return $http.get(getUrlForEmail(email));
-        // };
+        service.emailIsUnique = function (email) {
+            var emailURLencode = email.replace('@','%40');
+            return $http.get(getUrl() + "?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22email%22%2C%20%20%20%20%22operator%22%3A%20%22equals%22%2C%20%20%20%20%22value%22%3A%20%22"+ emailURLencode +"%22%20%20%7D%5D");
+        };
 
         service.create = function (object) {
             return $http.post(getUrl(), object);
@@ -178,6 +179,10 @@ angular.module('SimpleRESTIonic.services', [])
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
         };
+        service.emailIsUnique = function (email) {
+            var emailURLencode = email.replace('@','%40');
+            return $http.get(getUrl() + "?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22email%22%2C%20%20%20%20%22operator%22%3A%20%22equals%22%2C%20%20%20%20%22value%22%3A%20%22"+ emailURLencode +"%22%20%20%7D%5D");
+        };
     })
     .service('AdminsModel', function ($http, Backand) {
         var service = this,
@@ -210,6 +215,10 @@ angular.module('SimpleRESTIonic.services', [])
 
         service.delete = function (id) {
             return $http.delete(getUrlForId(id));
+        };
+        service.emailIsUnique = function (email) {
+            var emailURLencode = email.replace('@','%40');
+            return $http.get(getUrl() + "?pageSize=20&pageNumber=1&filter=%5B%20%7B%20%20%20%20%22fieldName%22%3A%20%22email%22%2C%20%20%20%20%22operator%22%3A%20%22equals%22%2C%20%20%20%20%22value%22%3A%20%22"+ emailURLencode +"%22%20%20%7D%5D");
         };
     })
     .service('BookingsModel', function ($http, Backand) {

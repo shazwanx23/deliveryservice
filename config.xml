@@ -9,7 +9,9 @@
     </author>
   <content src="index.html"/>
   <access origin="*"/>
+  <access origin="https://maps.google.com" />
   <preference name="webviewbounce" value="false"/>
+  <allow-intent href="https://maps.googleapis.com"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
   <preference name="android-minSdkVersion" value="16"/>

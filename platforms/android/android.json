@@ -27,6 +27,24 @@
                         {
                             "xml": "<feature name=\"Keyboard\"><param name=\"android-package\" value=\"io.ionic.keyboard.IonicKeyboard\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Geolocation\"><param name=\"android-package\" value=\"org.apache.cordova.geolocation.Geolocation\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            },
+            "AndroidManifest.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />",
+                            "count": 1
                         }
                     ]
                 }
@@ -50,6 +68,12 @@
             "PACKAGE_NAME": "com.ionicframework.delivery485332"
         },
         "ionic-plugin-keyboard": {
+            "PACKAGE_NAME": "com.ionicframework.delivery485332"
+        },
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.ionicframework.delivery485332"
+        },
+        "cordova-plugin-geolocation": {
             "PACKAGE_NAME": "com.ionicframework.delivery485332"
         }
     },
@@ -88,6 +112,18 @@
                 "cordova.plugins.Keyboard"
             ],
             "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-geolocation/www/android/geolocation.js",
+            "id": "cordova-plugin-geolocation.geolocation",
+            "clobbers": [
+                "navigator.geolocation"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-geolocation/www/PositionError.js",
+            "id": "cordova-plugin-geolocation.PositionError",
+            "runs": true
         }
     ],
     "plugin_metadata": {
@@ -96,6 +132,8 @@
         "cordova-plugin-splashscreen": "3.1.0",
         "cordova-plugin-statusbar": "2.1.1",
         "cordova-plugin-whitelist": "1.2.1",
-        "ionic-plugin-keyboard": "1.0.8"
+        "ionic-plugin-keyboard": "1.0.8",
+        "cordova-plugin-compat": "1.0.0",
+        "cordova-plugin-geolocation": "2.2.0"
     }
 }

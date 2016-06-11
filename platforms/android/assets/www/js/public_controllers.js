@@ -15,30 +15,6 @@ angular.module('public_controllers', [])
   }
 })
 .controller('LoginCtrl', function ($scope,$state,CustomersModel,DriversModel,$ionicPopup, AuthService) {
-  $scope.uid ='';
-  $scope.authenticate = function(form){
-    CustomersModel.all().success(function(response){
-      $scope.data = response.data;
-    }).then(function(){
-      //authenticate user
-      for(var i=0;i<$scope.data.length;i++){
-        if(form.email === $scope.data[i].email && form.password === $scope.data[i].password){
-          //user authenticated
-          $scope.message = "User authenticated";
-          $scope.uid = $scope.data[i].id;
-        }
-        if(i=== $scope.data.length){
-          $scope.message = "Authentication failed!";        
-        }
-      //success message
-      };
-      
-    }); 
-  }
-  $scope.setCurrentUsername = function(mail) {
-    $scope.email = mail;
-  };
- 
   $scope.login = function(data) {
     console.log(data.email);
     AuthService.login(data.email, data.password, data.user_type).then(function(authenticated) {
@@ -51,13 +27,26 @@ angular.module('public_controllers', [])
   };
 
 })
-.controller('registerCtrl', function ($scope,$state,CustomersModel,DriversModel) {
+.controller('registerCtrl', function ($ionicPopup,$scope,$state,CustomersModel,DriversModel) {
   $scope.customer = {};
   $scope.register = function(vm){
     $scope.customer.email = vm.email;
     $scope.customer.password = vm.password;
     $scope.customer.phoneNum = vm.phoneNum;
-    create(vm,$scope.decision.select);
+    $scope.customer.active = true;
+    CustomersModel.emailIsUnique($scope.customer.email)
+    .success(function(response){
+      console.log(response.data[0]);
+      if(response.data[0]){
+        var alertPopup = $ionicPopup.alert({
+          title: 'Email already exist!',
+          template: 'That email is already registered.'
+        });
+      }else{
+        create($scope.customer,$scope.decision.select);
+      }
+    })
+    
   };
 
   function create(object,type) {

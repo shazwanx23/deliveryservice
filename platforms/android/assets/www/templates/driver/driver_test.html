@@ -6,14 +6,11 @@
     <p><strong>Click view details to view customer's location on map</strong></p>
     <ul class="list" ng-model="bookings" ng-show='showBookings'>
 		  <li class="item col-70" ng-repeat="booking in pendingBookings" >		  	
-			    Pickup location: {{booking.pickup}} <br />          
+			    Pickup coordinate: {{booking.pickup}} <br />          
           Destination : {{booking.destination}}:<br />
-			    Time : {{booking.timein}}<br />
-          Booking status : {{booking.booking_status}}			<br />
-          Geocode : {{booking.destination_geocode}} <br />
+			    Time : {{booking.timein}}<br />          
           Distance : {{booking.distance}}KM     <br />
-          Price : RM{{booking.price}}     <br />
-		      
+          Price : RM{{booking.price}}     <br />		      
 		  	<button class="button button-medium button-balanced col-offset-20" ng-click='viewOneBooking(booking)' style='float:right;'>
             	View Details
         	</button>
@@ -37,7 +34,7 @@
 	<!-- view one booking -->
 	<ion-list ng-model="book" ng-show='showOneBooking'>
             
-            <ion-item>Pick up location : {{book.pickup}}
+            <ion-item>Pick up location 
               <input type='text' value="{{book.pickup}}">
             </ion-item>
             <ion-item>Destination : {{book.destination}}</ion-item>

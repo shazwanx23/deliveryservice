@@ -3,17 +3,16 @@
     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
   </ion-nav-buttons>
   <ion-content class="has-header">
-    <h1>Select another driver</h1>
-    <h4>Select Driver</h4>
-		      <ion-list ng-repeat="driver in availableDrivers" >
-		        <ion-radio ng-model="form.driver" ng-value="{{driver.id}}">
-					{{driver.username}}
-					
-		    	</ion-radio>
-			    <input type="button" class="button button-medium button-balanced" style="float:right" ng-click='openModal(driver)' value="View Driver">		  			
-				
-		        <br />        
-		      </ion-list>
-		    <button class="button button-block button-positive" ng-click="updateBooking(driver.id)">Update Booking</button>     
+    <h4>Select another driver</h4>
+		<ion-list ng-repeat="driver in availableDrivers" >
+            <div class='row'>
+		        <ion-radio ng-model="form.driver" name="driver" ng-value="{{driver.id}}" ng-change='calculate(driver.id)' class='col-67' required>
+					     {{driver.username}} <br />              
+		    	   </ion-radio>
+			       <input type="button" class="button button-medium button-balanced col" style="float:right" ng-click='openModal(driver)' value="View Driver">		  			
+		    </div>
+		                
+      </ion-list>
+		    <button class="button button-block button-positive" ng-disabled="driver.$pristine" ng-click="updateBooking(driver.id)">Update Booking</button>     
   </ion-content>
 </ion-view>

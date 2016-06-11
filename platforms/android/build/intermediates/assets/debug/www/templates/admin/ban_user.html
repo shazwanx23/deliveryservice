@@ -9,33 +9,55 @@
         </button>
         <button class="button button-medium button-balanced" ng-click='toggleShow()' ng-show='showCustomer'>
             Show Drivers
-        </button>
+        </button>        
     </div>
     <div ng-show='showCustomer'>
     	<h3>List of customers</h3>   		
+    	<strong>Toggle to activate or ban customers from logging in.</strong>
 	    <ul class="list" ng-model="customers">
+	    	<div>
+	    		<p style="float:left">Customer Email</p>
+	    		<p style="float:right;margin-right:5%;">Activate/Ban</p>
+	    	</div>
 		  <li class="item" ng-repeat="customer in customers">		  	
+		  	<div class='row'>
+		  		<div class='col-90'>
 			    {{customer.email}}
-			    <label class="toggle toggle-positive">
-					<input type="checkbox" ng-model="customer.active" ng-change="toggleCustomerActive(customer)">
-		            <div class="track">
-		               <div class="handle"></div>
-		        	</div>
-		        </label>
+				</div>    
+				<div class='col' style="float:right">
+				    <label class="toggle toggle-positive">
+				    	<input type="checkbox" ng-model="customer.active" ng-change="toggleCustomerActive(customer)">		    
+			            <div class="track">
+			               <div class="handle"></div>
+			        	</div>
+			        </label>
+		        </div>
+		    </div>
 		  </li>
 		</ul>
 	</div>
 	<div ng-show='!showCustomer'>
-    	<h3>List of Drivers</h3>   		
+    	<h3>List of Drivers</h3> 
+    	<strong>Toggle to activate or ban drivers from logging in.</strong>    	
 	    <ul class="list" ng-model="drivers">
+	    	<div>
+				<p style="float:left">Driver Email</p>
+				<p style="float:right;margin-right:5%;">Activate/Ban</p>
+	    	</div>
 		  <li class="item" ng-repeat="driver in drivers">		  	
+		  	<div class='row'>
+		  		<div class='col-90'>
 			    {{driver.email}}
-			    <label class="toggle toggle-positive">
-					<input type="checkbox" ng-model="driver.active" ng-change="toggleDriverActive(driver)">
-		            <div class="track">
-		               <div class="handle"></div>
-		        	</div>
-		        </label>
+			    </div>    
+			    <div class='col' style="float:right">
+				    <label class="toggle toggle-positive">
+						<input type="checkbox" ng-model="driver.active" ng-change="toggleDriverActive(driver)" style="float:right">
+			            <div class="track">
+			               <div class="handle"></div>
+			        	</div>
+			        </label>
+			    </div>
+		    </div>
 		  </li>
 		</ul>
 	</div>

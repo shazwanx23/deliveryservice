@@ -1,36 +1,33 @@
 <ion-view view-title="Delivery" hide-nav-bar="true" class="splash-page">
   <ion-content scroll="false">
-
-    <div class="padding logo">
-      <h1>Logo Here</h1>
+    <div class="bar bar-header bar-energized">
+      <h1 class="title">Home</h1>
     </div>
-    <br />
-    <br />
-    <h3 class-"padding-left padding-right">Login as</h3>
-    <div class="login-form">      
-      <div class="list">
-        <button class="button button-block button-energized" ng-click='goToCustomer()'>
-            Customer
-        </button>
-        <button class="button button-block button-assertive" ng-click='goToDriver()'>
-              Driver
-        </button>
-        <button class="button button-block button-balanced" ng-click='goToAdmin()'>
-              Admin
-        </button>
-        <button class="button button-block button-positive" ng-click='goToRegister()'>
-              Register
-        </button>
-      </div>      
     
-
-
-    <div class="padding signup-opt" >
-      Need an account? <a href="/#/register">Sign up!</a>
+    <div class="padding logo" style="text-align:center;margin-top:25%;">
+      <img ng-src="img/DS2.png" alt="Logo" />
     </div>
-    <div class="padding signup-opt" >
-      Admin? <a href="/#/login_admin">Login</a>
-    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div style="width:80%;margin:auto;">
+      <div class="login-form">      
+        <div class="list">
+          <button class="button button-block button-energized" ng-click='goToCustomer()'>
+              Customer
+          </button>
+          <button class="button button-block button-assertive" ng-click='goToDriver()'>
+                Driver
+          </button>
+          <button class="button button-block button-balanced" ng-click='goToAdmin()'>
+                Admin
+          </button>
+          <button class="button button-block button-positive" ng-click='goToRegister()'>
+                Register
+          </button>
+        </div>      
+    </div>      
 
   </ion-content>
 </ion-view>
