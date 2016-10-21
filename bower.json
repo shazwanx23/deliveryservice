@@ -5,6 +5,7 @@
     "ionic": "driftyco/ionic-bower#1.2.4"
   },
   "dependencies": {
-    "ionic-timepicker": "^0.5.1"
+    "ionic-timepicker": "^0.5.1",
+    "restangular": "^1.5.2"
   }
 }
