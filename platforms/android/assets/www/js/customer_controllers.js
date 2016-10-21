@@ -81,16 +81,22 @@ angular.module('customer_controllers', [])
   $scope.place = ''; 
     $scope.initialize = function(){
       $ionicPlatform.ready(function() {
-            // $cordovaGeolocation.getCurrentPosition
-            navigator.geolocation.getCurrentPosition({
+            $cordovaGeolocation.getCurrentPosition({
+            // navigator.geolocation.getCurrentPosition({
             timeout:10000,
             enableHighAccuracy:true
           }).then(function(position) {
             $scope.getDrivers();      
-            var latLng = new google.maps.LatLng(position.coords.latitude
-                                               ,position.coords.longitude);      
-            $scope.latitude = position.coords.latitude;
-            $scope.longitude = position.coords.longitude;
+            var latLng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+              // position.coords.latitude
+              //                                  ,position.coords.longitude);      
+            $scope.latitude = 
+            // 1.5644775;
+            position.coords.latitude;
+            $scope.longitude =
+             // 103.637787;
+            position.coords.longitude;
+            // 1.5644775,103.637787
             $scope.form.pickup =  $scope.latitude + "," +$scope.longitude ;
             var mapOptions = {
               center: latLng,
@@ -745,6 +751,7 @@ angular.module('customer_controllers', [])
   var customer = AuthService.getUserCookie();
   $scope.booking = {};
   $scope.driver = {};
+  console.log(customer.id);
   BookingsModel.getLatestBookingByCustomer(customer.id)
     .success(function(response){
       $scope.booking = response.data[0];

@@ -149,7 +149,6 @@ angular.module('driver_controllers', [])
     .success(function(){
       console.log('booking accepted');            
       $state.go('driver.booking_accepted');
-
     })
   }
   $scope.rejectBooking = function(){
